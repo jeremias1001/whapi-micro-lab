@@ -4,7 +4,8 @@ App interactiva avanzada para estudiar Microeconomia II con ejemplos de Whapi.pr
 
 Incluye:
 
-- ruta de 40 niveles tipo Duolingo;
+- ruta de 40 niveles tipo tutor;
+- practicas con pista, solucion y feedback inmediato;
 - formulas con simbologia matematica;
 - mapa de PDFs y fuentes;
 - pautas resueltas de controles y tipos de ejercicio;
@@ -28,4 +29,4 @@ http://127.0.0.1:4173/
 
 ## Vercel
 
-Es una app estatica. La raiz redirige a `advanced-v2.html`, y `whapi-demand-lab.html` contiene la misma version avanzada para compatibilidad.
+Es una app estatica. La raiz redirige a `advanced-v3.html`. `advanced-v2.html` queda como respaldo y `whapi-demand-lab.html` mantiene compatibilidad con enlaces anteriores.

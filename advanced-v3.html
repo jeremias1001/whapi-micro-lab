@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Whapi Micro Lab Tutor</title>
+  <style>
+    :root{
+      --bg:#f4f6f3;--panel:#fff;--ink:#16211b;--muted:#667168;--line:#d9e1d9;
+      --green:#176f50;--blue:#245b8d;--amber:#a26316;--red:#b74435;--soft:#edf5ef;
+      --shadow:0 16px 38px rgba(22,33,27,.08)
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.45}
+    button,input{font:inherit}
+    .app{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+    aside{position:sticky;top:0;height:100vh;overflow:auto;background:#eef3ee;border-right:1px solid var(--line);padding:18px}
+    main{width:100%;max-width:1280px;margin:0 auto;padding:24px}
+    .brand h1{font-size:22px;margin:0 0 6px}.brand p{margin:0 0 14px;color:var(--muted);font-size:13px}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+    .tab,.level,.btn,.choice{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left}
+    .tab.active,.level.active{border-color:var(--green);background:#fff}
+    .level{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;margin-bottom:8px}
+    .level small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.level.locked{opacity:.72}
+    .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e1e8e1;font-weight:800}
+    .done .num{background:var(--green);color:#fff}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px}
+    .grid{display:grid;gap:16px}.two{grid-template-columns:minmax(0,1fr) minmax(320px,.8fr)}.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .hero{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}.hero h2{font-size:31px;margin:0}.hero p{margin:8px 0;color:var(--muted)}
+    .meter{min-width:210px;text-align:right;color:var(--muted)}.bar{height:10px;background:#e1e7e0;border-radius:999px;overflow:hidden;border:1px solid var(--line);margin-top:9px}.fill{height:100%;width:0;background:var(--green)}
+    .coach{border-left:5px solid var(--green);background:#eef8f1;border-radius:10px;padding:14px}.coach.amber{border-color:var(--amber);background:#fff7eb}.coach.blue{border-color:var(--blue);background:#eef5fb}
+    .stagebar{display:flex;gap:8px;flex-wrap:wrap}.stage{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;cursor:pointer}.stage.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .formula{display:block;background:#f2f5f1;border:1px solid var(--line);border-radius:8px;padding:12px;margin:10px 0;overflow:auto;white-space:nowrap;font-family:"Cambria Math","Times New Roman",serif;font-size:1.2rem}
+    .frac{display:inline-grid;grid-template-rows:auto auto;text-align:center;vertical-align:middle;line-height:1.05;margin:0 .16em}.frac span:first-child{border-bottom:1px solid currentColor;padding:0 .25em .08em}.frac span:last-child{padding:.08em .25em 0}
+    .steps{display:grid;gap:10px}.step{border:1px solid var(--line);background:#fbfcfa;border-radius:10px;padding:12px}.step b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;margin-right:8px}
+    .practiceBox{display:grid;gap:10px}.choice{width:100%}.choice.ok{border-color:var(--green);background:#eaf7ef}.choice.no{border-color:var(--red);background:#fff0ee}
+    .answer{min-height:28px;color:var(--muted);margin-top:8px}.inputRow{display:flex;gap:8px;flex-wrap:wrap}.inputRow input{border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:160px;background:#fff}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.primary{background:var(--ink);color:#fff}.btn.good{background:var(--green);color:#fff}.btn.ghost{background:transparent}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);background:#fbfcfa;border-radius:10px;padding:14px}
+    .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;background:#fff;min-width:760px}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{background:#f2f5f1}
+    .hidden{display:none}.muted{color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 9px;margin:3px;color:var(--muted);font-size:12px}
+    @media(max-width:940px){.app{grid-template-columns:1fr}aside{position:static;height:auto}.two,.three,.cards,.hero{grid-template-columns:1fr}.meter{text-align:left}.tabs{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <h1>Whapi Micro Tutor</h1>
+      <p>Ruta guiada basada en ejemplo trabajado, practica activa, feedback y dominio.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-view="learn">Aprender</button>
+      <button class="tab" data-view="review">Repasar</button>
+      <button class="tab" data-view="cases">Pautas</button>
+      <button class="tab" data-view="whapi">Whapi</button>
+    </div>
+    <div class="coach blue">
+      <strong>Metodo</strong>
+      <p class="muted">1 mira el ejemplo, 2 predice el paso, 3 resuelve, 4 explica con palabras, 5 repite manana.</p>
+    </div>
+    <h3>Camino de dominio</h3>
+    <div id="path"></div>
+  </aside>
+  <main>
+    <section id="learn" class="view grid">
+      <div class="hero">
+        <div>
+          <h2 id="title"></h2>
+          <p id="subtitle"></p>
+          <span class="pill">Ejemplo trabajado</span><span class="pill">Practica de recuperacion</span><span class="pill">Feedback inmediato</span><span class="pill">Dominio</span>
+        </div>
+        <div class="meter">
+          <span id="progressText">0/40 dominados</span>
+          <div class="bar"><div id="progressFill" class="fill"></div></div>
+        </div>
+      </div>
+      <div class="panel stagebar" id="stagebar"></div>
+      <div class="grid two">
+        <div class="grid">
+          <div class="panel" id="stagePanel"></div>
+          <div class="panel">
+            <h3>Practica activa</h3>
+            <div id="practice" class="practiceBox"></div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="panel">
+            <h3>Coach</h3>
+            <div class="coach" id="coachBox"></div>
+          </div>
+          <div class="panel">
+            <h3>Mapa mental</h3>
+            <div class="cards" id="mental"></div>
+          </div>
+          <div class="panel">
+            <h3>Avance</h3>
+            <div class="inputRow">
+              <button class="btn good" id="masterBtn">Lo domino</button>
+              <button class="btn" id="nextBtn">Siguiente nivel</button>
+              <button class="btn ghost" id="resetBtn">Reiniciar progreso</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="review" class="view grid hidden">
+      <div class="hero"><div><h2>Repaso inteligente</h2><p>Flashcards y tabla de formulas. Primero intenta recordar, despues mira.</p></div></div>
+      <div class="grid two">
+        <div class="panel">
+          <h3 id="flashQ"></h3>
+          <div id="flashA" class="coach hidden"></div>
+          <div class="inputRow">
+            <button class="btn" id="prevFlash">Anterior</button><button class="btn primary" id="flipFlash">Ver respuesta</button><button class="btn" id="nextFlash">Siguiente</button>
+          </div>
+        </div>
+        <div class="panel coach amber">
+          <strong>Regla de examen</strong>
+          <p>Si no sabes que hacer, escribe: demanda, regla de maximizacion, costos, despeje, interpretacion economica.</p>
+        </div>
+      </div>
+      <div class="tablewrap"><table id="formulaTable"></table></div>
+    </section>
+    <section id="cases" class="view grid hidden">
+      <div class="hero"><div><h2>Pautas tipo examen</h2><p>Algoritmos de resolucion para controles y ejercicios largos.</p></div></div>
+      <div class="grid three" id="caseGrid"></div>
+    </section>
+    <section id="whapi" class="view grid hidden">
+      <div class="hero"><div><h2>Modo Whapi</h2><p>Usa la empresa como ancla mental para recordar discriminacion tipo 2.</p></div></div>
+      <div class="grid three">
+        <div class="panel"><h3>Starter</h3><span class="formula">Q_s(P)=109.62&minus;3.8462P</span><p class="muted">Tipo bajo: precio de entrada, limites reales y menor renta.</p></div>
+        <div class="panel"><h3>Plus</h3><span class="formula">U_m=V_m(Q)&minus;T</span><p class="muted">Tipo medio: automatizacion, CRM y seguimiento comercial.</p></div>
+        <div class="panel"><h3>Pro</h3><span class="formula">U_a(Pro)&ge;U_a(Starter)</span><p class="muted">Tipo alto: no debe querer imitar al bajo; recibe renta informativa.</p></div>
+      </div>
+      <div class="panel coach"><strong>Traduccion al examen:</strong> un menu bien disenado no es poner nombres bonitos. Es hacer que cada tipo elija voluntariamente el plan que la empresa queria que eligiera.</div>
+    </section>
+  </main>
+</div>
+<script>
+const frac=(a,b)=>'<span class="frac"><span>'+a+'</span><span>'+b+'</span></span>';
+const mk=(title,block,formula,vars,example,steps,quiz,answer,trap,whapi,source)=>({title,block,formula,vars,example,steps,quiz,answer,trap,whapi,source,
+  why:'Este nivel importa porque te da una pieza que se repite en casi todos los ejercicios de Micro II.',
+  intuition:'Antes de calcular, pregunta que decision economica se esta tomando y que variable cambia.',
+  phrase:'En la prueba siempre explico la formula, sustituyo numeros y cierro con interpretacion economica.'});
+const levels=[
+mk('Demanda directa','Herramientas base','Q=a&minus;P',['Q cantidad','P precio','a tamano de mercado'],'Si Q=10-P y P=3, entonces Q=7.',['Lee el precio','Sustituye P','Resta','Interpreta: a mayor P, menor Q'],'Con Q=10-P y P=4, Q es','6','Confundir precio con cantidad.','Clientes de Whapi bajan si el precio sube.','Demanda'),
+mk('Demanda inversa','Herramientas base','P=a&minus;Q',['P precio maximo','Q cantidad','a intercepto'],'Si Q=10-P, entonces P=10-Q.',['Parte de Q=a-P','Pasa P al otro lado','Pasa Q al otro lado','Usa P para ingresos'],'Si Q=20-P, la inversa es','P=20-Q','No despejar P.','Sirve para saber precio maximo por volumen.','Demanda'),
+mk('Ingreso total','Herramientas base','IT=P&middot;Q',['IT ingreso total','P precio','Q cantidad'],'P=8 y Q=12 da IT=96.',['Obtiene P','Obtiene Q','Multiplica','No restes costos aun'],'P=5 y Q=9, IT es','45','Creer que ingreso es beneficio.','Ingresos de planes antes de costos.','Ingreso'),
+mk('Ingreso marginal','Herramientas base','IMg='+frac('dIT','dQ'),['IMg ingreso marginal','IT ingreso total','Q cantidad'],'Si P=20-Q, IT=20Q-Q² e IMg=20-2Q.',['Escribe P(Q)','Multiplica por Q','Deriva','Compara con CMg'],'Si IT=30Q-Q², IMg es','30-2Q','Usar P como si fuera IMg.','Mide ingreso de un cliente/uso adicional.','Ingreso'),
+mk('Costo marginal','Herramientas base','CMg='+frac('dCT','dQ'),['CMg costo marginal','CT costo total','Q cantidad'],'Si CT=4Q+Q², CMg=4+2Q.',['Mira CT','Deriva','Evalua si piden numero','Compara con IMg o P'],'Si CT=6Q, CMg es','6','Usar costo total como marginal.','Costo por cliente o conversacion adicional.','Costos'),
+mk('Beneficio','Herramientas base','&pi;=IT&minus;CT=P(Q)Q&minus;CT(Q)',['π beneficio','IT ingreso','CT costo'],'IT=100 y CT=35 da π=65.',['Calcula IT','Calcula CT','Resta','Interpreta rentabilidad'],'IT=80 y CT=50, π es','30','Olvidar costos fijos/variables.','Utilidad del plan despues de infraestructura.','Beneficio'),
+mk('Maximizacion','Herramientas base','Monopolio: IMg=CMg; Competencia: P=CMg',['IMg','CMg','P'],'IMg=20-2Q y CMg=4 da Q=8.',['Identifica mercado','Escribe regla','Sustituye','Despeja'],'Monopolio maximiza con','IMg=CMg','Usar regla equivocada.','Whapi con diferenciacion mira margen.','Maximizacion'),
+mk('Excedente consumidor','Bienestar','EC='+frac('(a-P)²','2'),['EC bienestar consumidor','a intercepto','P precio'],'Q=20-P y P=8 da EC=(12²)/2=72.',['Calcula a-P','Eleva al cuadrado','Divide por 2','Interpreta ahorro del consumidor'],'Con a=10 y P=4, EC es','18','Olvidar dividir por 2.','Valor que cliente captura sobre precio.','Bienestar'),
+mk('Excedente productor','Bienestar','EP=PQ&minus;'+frac('&int;<sub>0</sub><sup>Q</sup>CMg(q)dq','1'),['EP productor','PQ ingreso','CMg costo marginal'],'Si no hay costo fijo, EP suele coincidir con π.',['Calcula ingreso','Calcula costo variable','Resta','Interpreta captura del productor'],'Sin costo fijo, EP se parece a','beneficio','Confundir EP con EC.','Valor que captura Whapi.','Bienestar'),
+mk('Bienestar total','Bienestar','BT=EC+EP',['BT bienestar total','EC consumidor','EP productor'],'EC=30 y EP=50 da BT=80.',['Calcula EC','Calcula EP','Suma','Evalua eficiencia'],'EC=12 y EP=20, BT es','32','Sumar transferencias dos veces.','Valor total del ecosistema.','Bienestar'),
+mk('Perdida social','Bienestar','PS='+frac('1','2')+'(Q<sup>CP</sup>&minus;Q<sup>M</sup>)(P<sup>M</sup>&minus;CMg)',['PS perdida','QCP eficiente','QM monopolio'],'Base 10 y altura 4 da PS=20.',['Encuentra cantidades','Encuentra altura','Triangulo','Interpreta ineficiencia'],'Base 8 altura 5, PS es','20','Confundir con transferencia.','Clientes que no compran aunque valoraban el servicio.','Bienestar'),
+mk('Discriminacion primer grado','Discriminacion','T(Q)=&int;<sub>0</sub><sup>Q</sup>P(q)dq',['T pago total','P(q) demanda inversa','Q cantidad'],'La firma cobra toda la disposicion a pagar.',['Calcula area bajo demanda','Cobra ese total','EC queda cero','Cantidad eficiente si P=CMg'],'En primer grado, EC es','0','Decir que siempre genera perdida social.','Cobrar perfecto a cada cliente seria imposible.','Discriminacion'),
+mk('Discriminacion segundo grado','Discriminacion','(Q_b,T_b), (Q_a,T_a)',['Q paquete','T pago total','b/a tipos'],'La empresa no observa tipo; disena menu.',['Define tipos','Disena planes','Impone IR','Impone IC'],'Tipo 2 requiere','autoseleccion','Creer que la empresa observa el tipo.','Starter/Plus/Pro son menu de autoseleccion.','Tipo 2'),
+mk('Restriccion IR','Tipo 2','V_i(Q_i)&minus;T_i&ge;0',['V valor','T pago','U utilidad'],'Si V=100 y T=90, participa porque U=10.',['Calcula valor','Resta pago','Compara con cero','Si es negativo no compra'],'IR significa que el cliente','participa','Olvidar que debe querer comprar.','Plan debe dar valor minimo.','IR'),
+mk('Restriccion IC','Tipo 2','V_a(Q_a)&minus;T_a&ge;V_a(Q_b)&minus;T_b',['IC compatibilidad','a alto','b bajo'],'El alto debe preferir Pro a Starter.',['Calcula utilidad en su plan','Calcula utilidad imitando','Compara','Ajusta menu'],'IC evita que el tipo alto','imite al bajo','Revisar solo IR.','Pro debe tener diferencias reales.','IC'),
+mk('Renta informativa','Tipo 2','RI=V_a(Q_b)&minus;T_b',['RI renta','V alto en plan bajo','T bajo'],'Se deja utilidad al alto para que no imite.',['Identifica plan bajo','Evalua con valor alto','Resta pago bajo','Interpreta incentivo'],'La renta informativa se deja al','tipo alto','Pensar que es error de precio.','Pro recibe valor extra para autoseleccionarse.','RI'),
+mk('Tarifa en dos partes','Tarifas','T(Q)=F+P&middot;Q',['F fijo','P precio unitario','Q uso'],'Mensualidad + precio por conversacion.',['Define F','Define P','Calcula consumo','Suma pago'],'T(Q) tiene cargo fijo y','precio por unidad','Olvidar el cargo fijo.','Plan mensual + excedentes.','Tarifa 2 partes'),
+mk('Tarifa unica','Tarifas','F=EC<sub>bajo</sub>(P)',['F fijo comun','EC bajo','P precio'],'Un plan comun se limita por el tipo bajo.',['Calcula EC bajo','Ese es F maximo','Calcula Q total','Maximiza π'],'En tarifa unica, F lo limita el','tipo bajo','Cobrar EC alto a todos.','Un solo plan deja dinero sobre la mesa.','Tarifa unica'),
+mk('Menu de tarifas','Tarifas','F_2=EC_2(P_2)&minus;EC_2(P_1)+F_1',['F1 bajo','F2 alto','EC2 valor alto'],'P2 suele ser CMg y P1 se distorsiona.',['Pon P2=CMg','Calcula F1','Usa IC alto','Compara beneficios'],'En menu, normalmente P2 es','CMg','No activar IC alto.','Pro eficiente; Starter limitado.','Menu'),
+mk('Control 4A gimnasio','Pauta','Q_1=30-P, Q_2=54-P, CMg=10',['Q1 bajo','Q2 alto','CMg'],'Pauta: tarifa unica P=16, F=98, π=872.',['Resolver tarifa unica','Resolver menu','Comparar π','Explicar IC/IR'],'En Control 4A, P tarifa unica es','16','No comparar con tarifa unica.','Analogico a Starter vs Pro.','Control 4A'),
+mk('Tercer grado','Discriminacion','IMg_1=IMg_2=CMg',['mercados observables','IMg','CMg'],'Segmentas grupos observables y cobras distinto.',['Separa demandas','Calcula IMg','Iguala a CMg','Obtiene precios'],'Tercer grado separa por grupos','observables','Confundir con autoseleccion.','Precios por segmento observable.','Tercer grado'),
+mk('Elasticidad y markup','Discriminacion',frac('P-CMg','P')+'&nbsp;=&nbsp;&minus;'+frac('1','&epsilon;'),['ε elasticidad','P precio','CMg costo'],'Mas inelastico paga mas.',['Calcula elasticidad','Aplica regla','Compara mercados','Interpreta'],'Demanda mas inelastica paga','mas','Ignorar signo de elasticidad.','Empresas criticas toleran mayor precio.','Elasticidad'),
+mk('Venta atada','Paquetes','V_A+V_B&ge;T',['VA valor A','VB valor B','T precio paquete'],'Compra si valor conjunto supera precio.',['Suma valores','Compara con precio','Cuenta compradores','Calcula π'],'Compra paquete si valor total es mayor que','precio','Mirar cada producto aislado.','API + automatizacion juntas.','Paquetes'),
+mk('Paquete puro','Paquetes','&pi;=(T_{pack}&minus;C_A&minus;C_B)N(T)',['T pack','C costos','N compradores'],'Solo se vende el paquete.',['Elige T','Determina compradores','Resta costos','Multiplica'],'Paquete puro ofrece solo','bundle','Ofrecer separados sin querer.','Plan todo incluido.','Paquetes'),
+mk('Paquete mixto','Paquetes','max{U_A,U_B,U_{AB}}',['UA separado','UB separado','UAB paquete'],'Consumidor elige mayor utilidad.',['Calcula tres utilidades','Elige max','Cuenta demanda','Compara π'],'En mixto se ofrecen separado y','paquete','No comparar utilidades.','Add-ons y plan completo.','Paquetes'),
+mk('Cournot basico','Oligopolio','P=A&minus;B(q_1+q_2)',['q1 firma 1','q2 firma 2','Q total'],'Compiten en cantidades al mismo tiempo.',['Escribe π1','Deriva por q1','Haz π2','Resuelve sistema'],'Cournot compite en','cantidades','Derivar por Q total mal.','Rivales deciden capacidad/volumen.','Cournot'),
+mk('Cournot costos lineales','Oligopolio','q_1='+frac('A-c_1-Bq_2','2B'),['A demanda','c costo','B pendiente'],'Con costos lineales salen reacciones rectas.',['Calcula IMg1','Iguala a c1','Despeja q1','Repite q2'],'La funcion de reaccion dice','mejor respuesta','Olvidar q rival.','Respuesta frente al competidor.','Cournot'),
+mk('Cournot cuadratico','Oligopolio','A&minus;2Bq_1&minus;Bq_2=c_1+2d_1q_1',['d costo cuadratico','CMg','q'],'Costo cuadratico aumenta CMg con q.',['Deriva CT','Iguala IMg','Ordena terminos','Sistema'],'Si CT=100q+.25q², CMg es','100+0.5q','Usar CMg constante.','Escalar soporte sube costos.','Cournot'),
+mk('Control 5A','Pauta','P=500-Q; CT_1=100q_1+.25q_1²; CT_2=60q_2+2q_2²',['P demanda','CT1','CT2'],'CPO1: 500-2q1-q2=100+0.5q1.',['Calcula IMg1','Calcula CMg1','CPO1','Sistema con CPO2'],'La CPO firma 1 incluye','0.5q1','Saltarse costos cuadraticos.','Competidores con costos distintos.','Control 5A'),
+mk('Competencia perfecta','Oligopolio','P=CMg_i(q_i)',['P precio','CMg firma','qi produccion'],'Cada firma produce hasta P=CMg.',['Iguala P a CMg','Despeja qi(P)','Suma ofertas','Iguala demanda'],'En competencia perfecta la regla es','P=CMg','Usar IMg de monopolio.','Mercado con muchas APIs similares.','CP'),
+mk('Suma horizontal CMg','Oligopolio','Q^S(P)=q_1(P)+q_2(P)',['QS oferta total','q1 oferta','q2 oferta'],'Se suman cantidades a cada precio.',['Despeja q1(P)','Despeja q2(P)','Suma','Invierte si piden CMg agregado'],'Para oferta agregada se suman','cantidades','Sumar precios.','Capacidad total de proveedores.','Suma CMg'),
+mk('Costo social Cournot','Bienestar','CS='+frac('1','2')+'(Q^{CP}&minus;Q^C)(P^C&minus;CMgAg)',['QCP','QC','altura'],'Es el triangulo de ineficiencia.',['Encuentra QCP','Encuentra QC','Calcula altura','Triangulo'],'CS es area de un','triangulo','Confundir con transferencia.','Usuarios que quedan fuera.','Costo social'),
+mk('Transferencia','Bienestar','TR=(P^C&minus;P^{CP})Q^C',['TR transferencia','sobreprecio','QC'],'No se destruye: cambia de manos.',['Resta precios','Multiplica por QC','Distingue de CS','Explica distribucion'],'TR usa la cantidad','Cournot','Llamarlo perdida social.','Cliente paga mas, firma captura.','Transferencia'),
+mk('Bertrand','Oligopolio','P=CMg=c',['P precio','CMg costo','c constante'],'Con producto homogeneo y costos iguales, precio cae a costo.',['Empresas eligen precio','Si una baja gana mercado','Equilibrio P=c','π=0'],'Bertrand compite en','precios','Confundir con Cournot.','SaaS muy comparable presiona precio.','Bertrand'),
+mk('Stackelberg','Oligopolio','q_2=R_2(q_1)',['lider','seguidora','reaccion'],'Se resuelve hacia atras.',['Resuelve seguidora','Sustituye en lider','Maximiza lider','Recupera q2'],'Stackelberg se resuelve por','induccion hacia atras','Resolver simultaneo.','Primero en mercado mueve al rival.','Stackelberg'),
+mk('Matrices de pago','Juegos','u_i(s_i,s_j)',['jugadores','estrategias','pagos'],'Cada celda tiene pagos de A y B.',['Lee filas y columnas','Marca pagos A','Marca pagos B','Busca mejores respuestas'],'Una matriz muestra','pagos','Leer pagos al reves.','Competidores eligen precio alto/bajo.','Juegos'),
+mk('Nash','Juegos','s_i^*=BR_i(s_j^*)',['BR mejor respuesta','s estrategia','u pago'],'Nadie quiere desviarse solo.',['Mejor respuesta A','Mejor respuesta B','Coincidencia','Declara Nash'],'Nash significa que nadie quiere','desviarse unilateralmente','Creer que es lo socialmente optimo.','Equilibrio de precios entre rivales.','Nash'),
+mk('Estrategia dominante','Juegos','u_i(s_i,A)>u_i(s_i\\prime,A) y u_i(s_i,B)>u_i(s_i\\prime,B)',['dominante','rival','pagos'],'Es mejor haga lo que haga el otro.',['Compara por columna','Si gana en todas','Es dominante','Si no, no existe'],'Dominante es mejor sin importar','rival','Mirar solo una columna.','Bajar precio puede dominar si siempre conviene.','Dominante'),
+mk('Maximin','Juegos','max min(u_i)',['min peor caso','max elegir mejor','u pago'],'Eliges la estrategia con mejor peor resultado.',['Toma peor pago por estrategia','Compara peores','Elige mayor','Interpreta conservador'],'Maximin elige el mejor','peor caso','Promediar pagos.','Decision defensiva ante incertidumbre.','Maximin'),
+mk('Dilema y repetidos','Juegos','VP(cooperar)&ge;VP(desviarse)',['VP valor presente','castigo','desvio'],'Una vez compiten; repetido puede sostener cooperacion.',['Encuentra Nash unico','Encuentra optimo conjunto','Agrega futuro','Compara incentivos'],'En dilema una vez el Nash suele ser','competir','Decir que siempre cooperan.','Relaciones repetidas sostienen disciplina.','Dilema')
+];
+const stages=['Entender','Formula','Ejemplo guiado','Tu turno','Memoria'];
+const done=new Set(JSON.parse(localStorage.getItem('microTutorDone')||'[]'));
+let idx=+(localStorage.getItem('microTutorIdx')||0),stage=0,flash=0,flipped=false;
+const $=id=>document.getElementById(id);
+function renderPath(){
+  $('path').innerHTML=levels.map((l,i)=>`<button class="level ${i===idx?'active':''} ${done.has(i)?'done':''}" data-i="${i}"><span class="num">${done.has(i)?'✓':i+1}</span><span><strong>${l.title}</strong><small>${l.block}</small></span></button>`).join('');
+  document.querySelectorAll('.level').forEach(b=>b.onclick=()=>{idx=+b.dataset.i;stage=0;save();renderLearn()});
+  $('progressText').textContent=`${done.size}/40 dominados`;$('progressFill').style.width=(done.size/levels.length*100)+'%';
+}
+function renderLearn(){
+  const l=levels[idx];$('title').textContent=`Nivel ${idx+1}: ${l.title}`;$('subtitle').textContent=l.why;
+  $('stagebar').innerHTML=stages.map((s,i)=>`<button class="stage ${i===stage?'active':''}" data-s="${i}">${i+1}. ${s}</button>`).join('');
+  document.querySelectorAll('.stage').forEach(b=>b.onclick=()=>{stage=+b.dataset.s;renderLearn()});
+  const panels=[
+    `<h3>Primero, la idea simple</h3><div class="coach"><strong>En castellano:</strong> ${l.intuition}</div><p>${l.why}</p><p class="muted">Pregunta de control: antes de calcular, di que variable se mueve y que esperas que pase.</p>`,
+    `<h3>Formula con simbolos</h3><span class="formula">${l.formula}</span><div class="cards">${l.vars.map(v=>`<div class="card">${v}</div>`).join('')}</div>`,
+    `<h3>Ejemplo trabajado</h3><span class="formula">${l.example}</span><div class="steps">${l.steps.map((s,i)=>`<div class="step"><b>${i+1}</b>${s}</div>`).join('')}</div>`,
+    `<h3>Ahora tu lo haces</h3><p>${l.quiz}</p><p class="muted">No mires la respuesta todavia. Intenta decirla en voz alta y luego responde.</p>`,
+    `<h3>Memoria de examen</h3><div class="coach amber"><strong>Error tipico:</strong> ${l.trap}</div><p><strong>Frase:</strong> ${l.phrase}</p><p><strong>Whapi:</strong> ${l.whapi}</p><p class="muted">Fuente/tema: ${l.source}</p>`
+  ];
+  $('stagePanel').innerHTML=panels[stage];
+  $('coachBox').innerHTML=`<strong>Como estudiarlo:</strong><p>Si no puedes explicar "${l.title}" sin mirar, no avances todavia. Mira el ejemplo, tapa la formula, reconstruyela y corrige.</p>`;
+  $('mental').innerHTML=`<div class="card"><strong>Que es</strong><p>${l.block}</p></div><div class="card"><strong>Cuando usar</strong><p>Cuando el enunciado mencione ${l.title.toLowerCase()} o pida calcularlo.</p></div><div class="card"><strong>Error</strong><p>${l.trap}</p></div><div class="card"><strong>Whapi</strong><p>${l.whapi}</p></div>`;
+  renderPractice();renderPath();
+}
+function renderPractice(){
+  const l=levels[idx];
+  $('practice').innerHTML=`<p><strong>${l.quiz}</strong></p><div class="inputRow"><input id="numAnswer" placeholder="Escribe tu respuesta"><button class="btn primary" id="checkAnswer">Revisar</button><button class="btn" id="hintBtn">Pista</button><button class="btn" id="solutionBtn">Solucion</button></div><div class="answer" id="answerBox"></div><div class="choices"><button class="choice" data-ok="1">${l.answer}</button><button class="choice">Usaria la formula sin interpretar variables</button><button class="choice">No escribiria pasos, solo resultado</button></div>`;
+  $('checkAnswer').onclick=()=>{const v=$('numAnswer').value.trim().toLowerCase();const ok=v && normalize(v)===normalize(l.answer);$('answerBox').textContent=ok?'Correcto. Ahora explica por que sale asi.':'Revisa: '+l.trap+' Respuesta esperada: '+l.answer};
+  $('hintBtn').onclick=()=>$('answerBox').textContent='Pista: '+l.steps[0]+'; luego '+l.steps[1]+'.';
+  $('solutionBtn').onclick=()=>$('answerBox').textContent='Solucion: '+l.answer+'. '+l.phrase;
+  document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{const ok=b.dataset.ok==='1';b.classList.add(ok?'ok':'no');$('answerBox').textContent=ok?'Bien. Ahora marca el nivel como dominado si podrias explicarlo sin mirar.':'Ese es un distractor: '+l.trap});
+}
+function normalize(s){return s.replace(/\s+/g,'').replace(',', '.').toLowerCase()}
+function save(){localStorage.setItem('microTutorIdx',idx)}
+$('masterBtn').onclick=()=>{done.add(idx);localStorage.setItem('microTutorDone',JSON.stringify([...done]));idx=Math.min(levels.length-1,idx+1);stage=0;save();renderLearn()};
+$('nextBtn').onclick=()=>{idx=Math.min(levels.length-1,idx+1);stage=0;save();renderLearn()};
+$('resetBtn').onclick=()=>{localStorage.removeItem('microTutorDone');localStorage.removeItem('microTutorIdx');location.reload()};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));$(t.dataset.view).classList.remove('hidden')});
+function renderReview(){
+  const rows=levels.map(l=>`<tr><td>${l.title}</td><td>${l.formula}</td><td>${l.trap}</td><td>${l.answer}</td></tr>`).join('');
+  $('formulaTable').innerHTML='<thead><tr><th>Tema</th><th>Formula</th><th>Error tipico</th><th>Respuesta clave</th></tr></thead><tbody>'+rows+'</tbody>';
+  renderFlash();
+}
+function renderFlash(){
+  const l=levels[flash];$('flashQ').textContent=l.title;$('flashA').classList.toggle('hidden',!flipped);$('flashA').innerHTML=`<span class="formula">${l.formula}</span><p>${l.phrase}</p>`;
+}
+$('flipFlash').onclick=()=>{flipped=!flipped;renderFlash()};$('prevFlash').onclick=()=>{flash=(flash-1+levels.length)%levels.length;flipped=false;renderFlash()};$('nextFlash').onclick=()=>{flash=(flash+1)%levels.length;flipped=false;renderFlash()};
+const cases=[
+['Tarifa unica','F=EC bajo; QT=n1Q1+n2Q2; maximiza π.','Sirve cuando hay un solo plan para todos.'],
+['Menu tipo 2','P2=CMg; F1=EC1; F2=EC2(P2)-EC2(P1)+F1.','Sirve cuando quieres autoseleccion.'],
+['Control 4A','Q1=30-P, Q2=54-P, c=10; tarifa unica P=16, F=98, π=872.','Caso gimnasio.'],
+['Cournot','πi=P(Q)qi-CTi; deriva por qi.','Compiten en cantidades simultaneas.'],
+['Control 5A','P=500-Q; costos cuadraticos; IMg=CMg por firma.','No olvidar derivar CT.'],
+['Competencia perfecta','P=CMg_i; despeja qi(P), suma ofertas.','Comparacion contra Cournot.'],
+['Stackelberg','Primero reaccion seguidora, despues lider.','Induccion hacia atras.'],
+['Juegos','Mejores respuestas, Nash, dominante, maximin.','No confundir Nash con optimo social.']
+];
+$('caseGrid').innerHTML=cases.map(c=>`<div class="panel"><h3>${c[0]}</h3><span class="formula">${c[1]}</span><p class="muted">${c[2]}</p></div>`).join('');
+renderLearn();renderReview();
+</script>
+</body>
+</html>

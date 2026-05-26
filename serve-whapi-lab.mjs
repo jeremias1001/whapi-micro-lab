@@ -16,7 +16,7 @@ const types = {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${port}`);
-  const requestPath = url.pathname === "/" ? "/whapi-demand-lab.html" : decodeURIComponent(url.pathname);
+  const requestPath = url.pathname === "/" ? "/advanced-v3.html" : decodeURIComponent(url.pathname);
   const filePath = path.normalize(path.join(root, requestPath));
 
   if (!filePath.startsWith(root)) {
@@ -40,5 +40,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, "127.0.0.1", () => {
-  console.log(`Whapi Micro Lab: http://127.0.0.1:${port}/`);
+  console.log(`Whapi Micro Tutor: http://127.0.0.1:${port}/`);
 });

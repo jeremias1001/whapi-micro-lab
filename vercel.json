@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/advanced-v2.html"
+      "destination": "/advanced-v3.html"
     }
   ]
 }
