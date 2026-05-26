@@ -1,0 +1,53 @@
+{
+  "note": "Mapa de fuentes para Whapi Micro Lab Advanced. Los PDFs no se suben al repo publico; este archivo registra como se usan en el curriculum. La extraccion literal completa requiere correr un parser/OCR local porque el entorno actual no permite escribir ni ejecutar todas las herramientas de extraccion.",
+  "sources": [
+    {
+      "file": "Micro2_DiscriTipo2_Tarifa2Partes (4)(5)(6).pdf",
+      "topics": ["discriminacion segundo grado", "tarifa en dos partes", "IR", "IC", "renta informativa"],
+      "used_in_levels": [13, 14, 15, 16, 17, 18, 19],
+      "status": "mapped_from_course_material"
+    },
+    {
+      "file": "EjercicioTarifa2Partes.pdf / Ejercicio_TarifaEn2Partes (1).pdf",
+      "topics": ["tarifa unica", "menu de tarifas", "Q1=30-P", "Q2=40-P", "F=EC bajo"],
+      "used_in_levels": [17, 18, 19],
+      "status": "mapped_from_course_material"
+    },
+    {
+      "file": "Control_04A_2026_PAUTA.pdf",
+      "topics": ["gimnasio", "tarifa unica", "menu tipo 2", "P=16", "F=98", "pi=872"],
+      "used_in_levels": [20],
+      "status": "mapped_from_pauta_summary"
+    },
+    {
+      "file": "Cournot___Bertrand (2).pdf / Cournot_y_Bertrand_Ej2 (1).pdf",
+      "topics": ["Cournot", "Bertrand", "funciones de reaccion", "oligopolio"],
+      "used_in_levels": [26, 27, 28, 34],
+      "status": "mapped_from_course_material"
+    },
+    {
+      "file": "Control_05A_2026_PAUTA.pdf",
+      "topics": ["Cournot con costos cuadraticos", "P=500-Q", "CT1=100q1+0.25q1^2", "CT2=60q2+2q2^2", "bienestar"],
+      "used_in_levels": [29, 32, 33],
+      "status": "mapped_from_pauta_summary"
+    },
+    {
+      "file": "SumaCMg (1).pdf",
+      "topics": ["competencia perfecta", "suma horizontal de costos marginales", "oferta agregada", "costo social"],
+      "used_in_levels": [30, 31, 32],
+      "status": "mapped_from_course_material"
+    },
+    {
+      "file": "Stackelberg.pdf",
+      "topics": ["juego secuencial", "lider", "seguidora", "induccion hacia atras"],
+      "used_in_levels": [35],
+      "status": "mapped_from_course_material"
+    },
+    {
+      "file": "DilemaDelPrisionero.pdf",
+      "topics": ["Nash", "estrategia dominante", "maximin", "dilema del prisionero", "juegos repetidos"],
+      "used_in_levels": [36, 37, 38, 39, 40],
+      "status": "mapped_from_course_material"
+    }
+  ]
+}
