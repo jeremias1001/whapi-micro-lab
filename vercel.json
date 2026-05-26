@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/whapi-demand-lab.html"
+      "destination": "/advanced-v2.html"
     }
   ]
 }

@@ -1,11 +1,13 @@
 # Whapi Micro Lab
 
-App interactiva para estudiar Microeconomia II con ejemplos de Whapi.pro.
+App interactiva avanzada para estudiar Microeconomia II con ejemplos de Whapi.pro.
 
 Incluye:
 
-- ruta de niveles tipo Duolingo;
+- ruta de 40 niveles tipo Duolingo;
 - formulas con simbologia matematica;
+- mapa de PDFs y fuentes;
+- pautas resueltas de controles y tipos de ejercicio;
 - laboratorio de demanda y pricing;
 - ejercicios guiados;
 - simulacro final;
@@ -26,4 +28,4 @@ http://127.0.0.1:4173/
 
 ## Vercel
 
-Es una app estatica. Vercel puede servirla directamente desde `index.html` y `whapi-demand-lab.html`.
+Es una app estatica. La raiz redirige a `advanced-v2.html`, y `whapi-demand-lab.html` contiene la misma version avanzada para compatibilidad.
