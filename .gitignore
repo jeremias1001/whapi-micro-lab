@@ -1,0 +1,15 @@
+# Course/source data kept local
+*.pdf
+*.sqlite
+*.db
+*.csv
+*.sql
+
+# Local/runtime
+.vercel/
+node_modules/
+npm-debug.log*
+
+# OS/editor
+.DS_Store
+Thumbs.db

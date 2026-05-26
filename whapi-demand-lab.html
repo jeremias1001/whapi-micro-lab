@@ -1,0 +1,2168 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Whapi Micro Lab</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
+      svg: { fontCache: 'global' },
+      startup: { typeset: false }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --ink: #17201b;
+      --muted: #5b665f;
+      --line: #d9ded7;
+      --panel: #ffffff;
+      --green: #167a58;
+      --teal: #0f6b78;
+      --blue: #285fbd;
+      --red: #b84435;
+      --amber: #b56b18;
+      --shadow: 0 12px 26px rgba(29, 42, 35, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button, input, select { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: #eef2ee;
+      padding: 18px 14px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .brand {
+      padding: 8px 8px 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      color: var(--muted);
+      margin: 6px 0 0;
+      font-size: 13px;
+    }
+
+    nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 12px;
+      border-radius: 6px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      background: var(--panel);
+      color: var(--ink);
+      border-color: var(--line);
+      box-shadow: 0 4px 12px rgba(29, 42, 35, .05);
+    }
+
+    main {
+      padding: 24px;
+      max-width: 1320px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 6px;
+      padding: 8px 10px;
+      min-width: 176px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.two {
+      grid-template-columns: minmax(320px, .85fr) minmax(0, 1.15fr);
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-pad { padding: 18px; }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .panel p {
+      margin: 8px 0;
+      color: var(--muted);
+    }
+
+    .formula {
+      display: block;
+      background: #f1f4f0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      font-family: "Cascadia Code", Consolas, monospace;
+      color: #1f3329;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .formula mjx-container {
+      margin: 0 !important;
+      font-size: 112% !important;
+    }
+
+    .math {
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-size: 1.12em;
+      color: #15281f;
+      white-space: normal;
+    }
+
+    .frac {
+      display: inline-grid;
+      grid-template-rows: auto auto;
+      vertical-align: middle;
+      text-align: center;
+      line-height: 1.05;
+      margin: 0 .14em;
+    }
+
+    .frac > span:first-child {
+      border-bottom: 1px solid currentColor;
+      padding: 0 .22em .08em;
+    }
+
+    .frac > span:last-child {
+      padding: .08em .22em 0;
+    }
+
+    .math sup,
+    .math sub {
+      font-size: .72em;
+      line-height: 0;
+    }
+
+    .controls {
+      display: grid;
+      gap: 14px;
+    }
+
+    .control {
+      display: grid;
+      gap: 7px;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .control strong { color: var(--ink); }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--green);
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 86px;
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      min-height: 34px;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    canvas {
+      width: 100%;
+      height: 330px;
+      display: block;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      background: var(--panel);
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f1f4f0;
+      color: #2d3932;
+      font-weight: 650;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 86px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 4px 8px;
+      font-size: 12px;
+      color: var(--muted);
+      background: #f8faf7;
+    }
+
+    .pill.good {
+      color: var(--green);
+      border-color: rgba(22, 122, 88, .28);
+      background: rgba(22, 122, 88, .08);
+    }
+
+    .pill.warn {
+      color: var(--red);
+      border-color: rgba(184, 68, 53, .28);
+      background: rgba(184, 68, 53, .08);
+    }
+
+    .lesson {
+      display: none;
+    }
+
+    .lesson.active {
+      display: grid;
+      gap: 16px;
+    }
+
+    .callout {
+      border-left: 4px solid var(--green);
+      background: #f0f6f1;
+      padding: 13px 14px;
+      border-radius: 6px;
+    }
+
+    .callout strong { color: #174a37; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .step span {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    .quiz-options button.correct {
+      border-color: rgba(22, 122, 88, .45);
+      background: rgba(22, 122, 88, .10);
+    }
+
+    .quiz-options button.wrong {
+      border-color: rgba(184, 68, 53, .45);
+      background: rgba(184, 68, 53, .10);
+    }
+
+    .answer {
+      min-height: 28px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: #e1e6df;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--green), var(--teal));
+      border-radius: inherit;
+      transition: width .25s ease;
+    }
+
+    .level-layout {
+      display: grid;
+      grid-template-columns: minmax(250px, .7fr) minmax(0, 1.3fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .level-path {
+      display: grid;
+      gap: 8px;
+      max-height: 720px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .level-node {
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .level-node.active {
+      border-color: rgba(22, 122, 88, .55);
+      background: rgba(22, 122, 88, .08);
+    }
+
+    .level-node.done .level-num {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .level-node.locked {
+      opacity: .72;
+    }
+
+    .level-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #edf1eb;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .level-node strong {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .level-node small {
+      display: block;
+      color: var(--muted);
+      margin-top: 2px;
+      font-size: 12px;
+    }
+
+    .level-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .level-meta .pill {
+      min-width: auto;
+    }
+
+    .meaning-list,
+    .simple-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .meaning-list li,
+    .simple-list li {
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 6px;
+      padding: 9px 10px;
+      color: var(--muted);
+    }
+
+    .level-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .action-btn {
+      border: 1px solid var(--line);
+      background: var(--ink);
+      color: #fff;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    .action-btn.secondary {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .practice-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcfa;
+      margin-top: 12px;
+    }
+
+    .practice-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .practice-options button {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .practice-options button.correct {
+      border-color: rgba(22, 122, 88, .48);
+      background: rgba(22, 122, 88, .1);
+    }
+
+    .practice-options button.wrong {
+      border-color: rgba(184, 68, 53, .48);
+      background: rgba(184, 68, 53, .1);
+    }
+
+    .num-answer {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .num-answer input {
+      min-width: 160px;
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: white;
+    }
+
+    .exam-score {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .flashcard {
+      min-height: 170px;
+      display: grid;
+      align-content: center;
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 8px;
+      padding: 18px;
+      cursor: pointer;
+    }
+
+    .flashcard strong {
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      gap: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .timeline-item time {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    @media (max-width: 920px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      main { padding: 18px; }
+      .topbar { flex-direction: column; }
+      .badge { text-align: left; width: 100%; }
+      .grid.two, .grid.three, .steps, .stat-row, .exam-score { grid-template-columns: 1fr; }
+      .timeline-item { grid-template-columns: 1fr; }
+      .level-layout { grid-template-columns: 1fr; }
+      .level-path { max-height: none; }
+      canvas { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <h1>Whapi Micro Lab</h1>
+        <p>Aprende demanda, precios y autoseleccion con tus datos SaaS.</p>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-tab="levels">Niveles</button>
+        <button class="nav-btn" data-tab="lab">Laboratorio</button>
+        <button class="nav-btn" data-tab="functions">Funciones reales</button>
+        <button class="nav-btn" data-tab="menu">Menu tipo 2</button>
+        <button class="nav-btn" data-tab="map">Mapa examen</button>
+        <button class="nav-btn" data-tab="formulas">Formulas</button>
+        <button class="nav-btn" data-tab="exercises">Ejercicios</button>
+        <button class="nav-btn" data-tab="final">Simulacro final</button>
+        <button class="nav-btn" data-tab="quiz">Preguntas</button>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="lesson active" id="levels">
+        <div class="topbar">
+          <div>
+            <h2>Ruta de niveles Microeconomia II</h2>
+            <p>Aprende como en una ruta corta: concepto, formula, significado, ejemplo, pasos, practica y frase de examen. Puedes abrir cualquier nivel aunque aparezca como bloqueado.</p>
+          </div>
+          <div class="badge">
+            <span id="levelProgressText">0/12 completados</span>
+            <div class="progress-track"><div class="progress-fill" id="levelProgressFill"></div></div>
+          </div>
+        </div>
+
+        <div class="level-layout">
+          <div class="panel panel-pad">
+            <h3>Camino</h3>
+            <div class="level-path" id="levelPath"></div>
+          </div>
+
+          <div class="grid">
+            <div class="panel panel-pad">
+              <div class="level-meta">
+                <span class="pill" id="levelStatus">Nivel actual</span>
+                <span class="pill" id="levelType">Formula + practica</span>
+              </div>
+              <h3 id="levelTitle"></h3>
+              <p id="levelGoal"></p>
+              <div class="callout"><strong>Idea central:</strong> <span id="levelConcept"></span></div>
+              <span class="formula" id="levelFormula"></span>
+            </div>
+
+            <div class="grid two">
+              <div class="panel panel-pad">
+                <h3>Que significa cada parte</h3>
+                <ul class="meaning-list" id="levelMeaning"></ul>
+              </div>
+              <div class="panel panel-pad">
+                <h3>Ejemplo simple</h3>
+                <div id="levelExample"></div>
+              </div>
+            </div>
+
+            <div class="panel panel-pad">
+              <h3>Pasos para resolver</h3>
+              <div class="steps" id="levelSteps"></div>
+            </div>
+
+            <div class="grid two">
+              <div class="panel panel-pad">
+                <h3>Practica del nivel</h3>
+                <div id="levelPractice"></div>
+              </div>
+              <div class="panel panel-pad">
+                <h3>Para memorizar</h3>
+                <p><strong>Whapi:</strong> <span id="levelWhapi"></span></p>
+                <p><strong>Frase para la prueba:</strong> <span id="levelExamPhrase"></span></p>
+                <div class="level-actions">
+                  <button class="action-btn" id="completeLevelBtn">Marcar nivel completo</button>
+                  <button class="action-btn secondary" id="nextLevelBtn">Siguiente nivel</button>
+                  <button class="action-btn secondary" id="resetLevelsBtn">Reiniciar progreso</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="lab">
+        <div class="topbar">
+          <div>
+            <h2>Precio mueve demanda, ingresos y beneficio</h2>
+            <p>Mueve los sliders. La curva no sale de intuicion: esta calibrada con precios reales de SaaS comparables en CRM, email marketing, AI agents, AI assistants, LLM y cloud hosting.</p>
+          </div>
+          <div class="badge">Datos base: 99 herramientas comparables</div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel panel-pad">
+            <h3>Controles</h3>
+            <div class="controls">
+              <label class="control">
+                <span class="control-head"><strong>Precio Starter</strong><span><span id="entryPriceOut"></span> USD</span></span>
+                <input id="entryPrice" type="range" min="2" max="35" step="1" value="19">
+              </label>
+              <label class="control">
+                <span class="control-head"><strong>Precio Pro</strong><span><span id="growthPriceOut"></span> USD</span></span>
+                <input id="growthPrice" type="range" min="20" max="180" step="1" value="99">
+              </label>
+              <label class="control">
+                <span class="control-head"><strong>Costo marginal por cliente</strong><span><span id="costOut"></span> USD</span></span>
+                <input id="cost" type="range" min="1" max="30" step="1" value="8">
+              </label>
+            </div>
+            <span class="formula">Q_entry(P) = clamp(109.62 - 3.8462P, 0, 100)</span>
+            <span class="formula">Q_growth(P) = clamp(85.05 - 0.5025P, 0, 100)</span>
+            <p>Q se interpreta como clientes esperados por cada 100 prospectos comparables. Es una proxy de demanda basada en tolerancia de precios de mercado.</p>
+          </div>
+
+          <div class="panel panel-pad">
+            <h3>Curvas de demanda benchmark</h3>
+            <canvas id="demandChart" width="900" height="420"></canvas>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat">
+            <small>Demanda Starter por 100 prospectos</small>
+            <strong id="entryQ"></strong>
+          </div>
+          <div class="stat">
+            <small>Ingreso Starter por 100 prospectos</small>
+            <strong id="entryRevenue"></strong>
+          </div>
+          <div class="stat">
+            <small>Demanda Pro por 100 prospectos</small>
+            <strong id="growthQ"></strong>
+          </div>
+          <div class="stat">
+            <small>Beneficio Pro por 100 prospectos</small>
+            <strong id="growthProfit"></strong>
+          </div>
+        </div>
+
+        <div class="panel panel-pad">
+          <h3>Como aprender mirando el grafico</h3>
+          <div class="steps">
+            <div class="step"><span>1</span><p>Sube precio y mira como baja Q. Esa es la ley de demanda.</p></div>
+            <div class="step"><span>2</span><p>Busca el precio donde ingreso no necesariamente es maximo con Q maxima.</p></div>
+            <div class="step"><span>3</span><p>Agrega costo marginal: beneficio no es lo mismo que ingreso.</p></div>
+            <div class="step"><span>4</span><p>Compara Starter y Pro: tipo 2 existe porque hay segmentos distintos.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="functions">
+        <div class="topbar">
+          <div>
+            <h2>Dos funciones de demanda estimadas con datos reales</h2>
+            <p>Los CSV no tienen cantidad vendida por precio. Por eso usamos precios observados como benchmark: si muchos SaaS comparables sostienen precios altos, eso revela tolerancia de mercado, no demanda perfecta.</p>
+          </div>
+          <div class="badge">Metodo: ajuste lineal p25-p75</div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel panel-pad">
+            <h3>Funcion 1: entrada / Starter</h3>
+            <p>Se usa `starting_price_usd > 0` en categorias comparables. Esta curva sirve para pequenas empresas y precio de entrada.</p>
+            <span class="formula">Q_s(P) = 109.62 - 3.8462P</span>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
+                <tbody>
+                  <tr><td>Observaciones</td><td>31 precios de entrada pagados</td></tr>
+                  <tr><td>Precio minimo</td><td>1.98 USD</td></tr>
+                  <tr><td>Percentil 25</td><td>9 USD</td></tr>
+                  <tr><td>Mediana</td><td>15 USD</td></tr>
+                  <tr><td>Percentil 75</td><td>22 USD</td></tr>
+                  <tr><td>Precio maximo</td><td>299 USD</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Lectura: por cada 1 USD que sube el Starter, la demanda proxy cae cerca de 3.85 clientes por cada 100 prospectos.</p>
+          </div>
+
+          <div class="panel panel-pad">
+            <h3>Funcion 2: crecimiento / Pro</h3>
+            <p>Se usa `highest_plan_price_usd` en categorias comparables. Esta curva sirve para planes Plus/Pro y empresas con mayor valor.</p>
+            <span class="formula">Q_g(P) = 85.05 - 0.5025P</span>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
+                <tbody>
+                  <tr><td>Observaciones</td><td>79 precios de planes altos</td></tr>
+                  <tr><td>Precio minimo</td><td>4.98 USD</td></tr>
+                  <tr><td>Percentil 25</td><td>20 USD</td></tr>
+                  <tr><td>Mediana</td><td>59 USD</td></tr>
+                  <tr><td>Percentil 75</td><td>119.50 USD</td></tr>
+                  <tr><td>Precio maximo</td><td>3600 USD</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Lectura: la demanda Pro cae menos por cada dolar adicional; el segmento alto es menos elastico.</p>
+          </div>
+        </div>
+
+        <div class="panel panel-pad">
+          <h3>Benchmarks usados</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Categoria</th><th>Herramientas</th><th>Rating promedio</th><th>Precio mediano</th><th>Plan gratis</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>CRM</td><td>18</td><td>4.43</td><td>32 USD</td><td>39%</td></tr>
+                <tr><td>Email marketing</td><td>20</td><td>4.38</td><td>19.95 USD</td><td>70%</td></tr>
+                <tr><td>AI agents</td><td>8</td><td>4.35</td><td>19.99 USD</td><td>88%</td></tr>
+                <tr><td>AI assistants</td><td>7</td><td>4.50</td><td>39 USD</td><td>86%</td></tr>
+                <tr><td>LLM</td><td>25</td><td>4.47</td><td>20 USD</td><td>80%</td></tr>
+                <tr><td>Cloud hosting</td><td>21</td><td>4.38</td><td>5.99 USD</td><td>52%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="menu">
+        <div class="topbar">
+          <div>
+            <h2>Menu de precios tipo 2</h2>
+            <p>La pregunta economica no es solo cuanto cobrar. Es como evitar que una empresa grande se cuele en el plan barato.</p>
+          </div>
+          <div class="badge">IR + IC + renta informativa</div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel panel-pad">
+            <h3>Planes didacticos</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Plan</th><th>Tipo</th><th>Precio</th><th>Limite</th><th>Rol micro</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Starter</td><td>Pequeno</td><td id="starterCell"></td><td>300 conv.</td><td>Participacion del bajo</td></tr>
+                  <tr><td>Plus</td><td>Mediano</td><td>49 USD</td><td>1500 conv.</td><td>Autoseleccion intermedia</td></tr>
+                  <tr><td>Pro</td><td>Alto</td><td id="proCell"></td><td>5000 conv.</td><td>Captura valor del alto</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <span class="formula">IR: V_i(plan propio) - T_i >= 0</span>
+            <span class="formula">IC: U_i(plan propio) >= U_i(plan ajeno)</span>
+          </div>
+
+          <div class="panel panel-pad">
+            <h3>Chequeo de autoseleccion</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Condicion</th><th>Estado</th><th>Interpretacion</th></tr></thead>
+                <tbody>
+                  <tr><td>Pequeno compra Starter</td><td><span id="irLow" class="pill"></span></td><td>El valor supera el pago.</td></tr>
+                  <tr><td>Grande prefiere Pro</td><td><span id="icHigh" class="pill"></span></td><td>Pro debe ganarle a colarse en Starter.</td></tr>
+                  <tr><td>Renta informativa</td><td><span id="rentInfo" class="pill"></span></td><td>Excedente que se deja al tipo alto.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p id="menuExplain"></p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Frase para examen:</strong> en discriminacion tipo 2, el plan bajo suele quedar limitado o distorsionado para que el tipo alto no lo imite. Por eso Starter no puede tener todas las integraciones, analytics y capacidad de Pro.
+        </div>
+      </section>
+
+      <section class="lesson" id="map">
+        <div class="topbar">
+          <div>
+            <h2>Mapa completo del examen</h2>
+            <p>Esta vista es tu tablero de control: que entra, que formula usar y como reconocer cada tipo de ejercicio.</p>
+          </div>
+          <div class="badge">6 bloques grandes</div>
+        </div>
+
+        <div class="grid three">
+          <div class="panel panel-pad">
+            <h3>1. Herramientas base</h3>
+            <p>Demanda, ingreso total, ingreso marginal, costos, beneficio y regla de maximizacion.</p>
+            <span class="formula">IT = P * Q</span>
+            <span class="formula">IMg = dIT/dQ</span>
+            <span class="formula">pi = IT - CT</span>
+          </div>
+          <div class="panel panel-pad">
+            <h3>2. Bienestar</h3>
+            <p>Excedente del consumidor, excedente del productor, bienestar total y perdida social.</p>
+            <span class="formula">EC = (a-P)^2 / 2</span>
+            <span class="formula">BT = EC + EP</span>
+            <span class="formula">PS = 1/2(Q_CP-Q_M)(P_M-CMg)</span>
+          </div>
+          <div class="panel panel-pad">
+            <h3>3. Discriminacion</h3>
+            <p>Primer grado, segundo grado, tercer grado, autoseleccion, IR, IC y renta informativa.</p>
+            <span class="formula">U_i = V_i(Q) - T</span>
+            <span class="formula">IR: U_i >= 0</span>
+            <span class="formula">IC: U_i propio >= U_i ajeno</span>
+          </div>
+          <div class="panel panel-pad">
+            <h3>4. Tarifa en dos partes</h3>
+            <p>Cargo fijo mas precio por unidad. Muy probable en control o solemne.</p>
+            <span class="formula">T(Q) = F + P Q</span>
+            <span class="formula">F = EC_bajo(P)</span>
+            <span class="formula">pi = nF + (P-c)Q</span>
+          </div>
+          <div class="panel panel-pad">
+            <h3>5. Oligopolio</h3>
+            <p>Cournot, Bertrand, Stackelberg y competencia perfecta con varias firmas.</p>
+            <span class="formula">Cournot: IMg_i = CMg_i</span>
+            <span class="formula">Bertrand: P = CMg</span>
+            <span class="formula">Stackelberg: induccion hacia atras</span>
+          </div>
+          <div class="panel panel-pad">
+            <h3>6. Juegos</h3>
+            <p>Nash, estrategia dominante, maximin, dilema del prisionero y juego repetido.</p>
+            <span class="formula">Nash: nadie se desvia solo</span>
+            <span class="formula">Maximin: max[min(u_i)]</span>
+            <span class="formula">Cooperar si VP coop >= VP desviarse</span>
+          </div>
+        </div>
+
+        <div class="panel panel-pad">
+          <h3>Como reconocer que te estan preguntando</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Si el enunciado dice...</th><th>Tipo de ejercicio</th><th>Primer paso</th></tr></thead>
+              <tbody>
+                <tr><td>Dos tipos de consumidores y un pago fijo</td><td>Tarifa en dos partes</td><td>Calcular EC del tipo bajo</td></tr>
+                <tr><td>Menu de planes, tipo bajo y tipo alto</td><td>Discriminacion tipo 2</td><td>Escribir IR e IC</td></tr>
+                <tr><td>Firmas eligen cantidades simultaneamente</td><td>Cournot</td><td>Armar pi_i y derivar respecto a q_i</td></tr>
+                <tr><td>Firmas compiten en precios</td><td>Bertrand</td><td>Preguntar si bienes son homogeneos y costos iguales</td></tr>
+                <tr><td>Una firma lider y otra seguidora</td><td>Stackelberg</td><td>Resolver primero la reaccion de la seguidora</td></tr>
+                <tr><td>Matriz de pagos</td><td>Teoria de juegos</td><td>Marcar mejores respuestas por jugador</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="formulas">
+        <div class="topbar">
+          <div>
+            <h2>Entrenador de formulas</h2>
+            <p>Elige un tema. La app te muestra la formula, cuando usarla y el error tipico que tienes que evitar.</p>
+          </div>
+          <div class="badge">Memoria activa</div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel panel-pad">
+            <h3>Selecciona tema</h3>
+            <div class="controls" id="formulaButtons"></div>
+          </div>
+          <div class="panel panel-pad">
+            <h3 id="formulaTitle"></h3>
+            <p id="formulaUse"></p>
+            <span class="formula" id="formulaMain"></span>
+            <p><strong>Pasos:</strong></p>
+            <p id="formulaSteps"></p>
+            <p><strong>Error tipico:</strong></p>
+            <p id="formulaTrap"></p>
+            <div class="callout"><strong>Whapi:</strong> <span id="formulaWhapi"></span></div>
+          </div>
+        </div>
+
+        <div class="panel panel-pad">
+          <h3>Tabla express de formulas que debes saber si o si</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tema</th><th>Formula</th><th>Uso</th></tr></thead>
+              <tbody>
+                <tr><td>Demanda inversa</td><td>P = a - Q</td><td>Pasar de cantidad a precio</td></tr>
+                <tr><td>Ingreso total</td><td>IT = P * Q</td><td>Ingresos antes de costos</td></tr>
+                <tr><td>Ingreso marginal</td><td>IMg = a - 2bQ</td><td>Monopolio y Cournot</td></tr>
+                <tr><td>Costo marginal</td><td>CMg = dCT/dQ</td><td>Costo de una unidad adicional</td></tr>
+                <tr><td>Beneficio</td><td>pi = P(Q)Q - CT(Q)</td><td>Maximizar utilidad empresa</td></tr>
+                <tr><td>Excedente consumidor</td><td>EC = (a-P)^2/2</td><td>Cargo fijo y bienestar</td></tr>
+                <tr><td>Tarifa dos partes</td><td>T(Q)=F+PQ</td><td>Mensualidad mas uso</td></tr>
+                <tr><td>Menu tipo 2</td><td>IR e IC</td><td>Autoseleccion de planes</td></tr>
+                <tr><td>Cournot</td><td>IMg_i = CMg_i</td><td>Funciones de reaccion</td></tr>
+                <tr><td>Competencia perfecta</td><td>P = CMg</td><td>Oferta individual/agregada</td></tr>
+                <tr><td>Costo social</td><td>CS = 1/2(Q_CP-Q_C)(P_C-CMgAg)</td><td>Perdida de eficiencia</td></tr>
+                <tr><td>Nash</td><td>s_i*=BR_i(s_j*)</td><td>Nadie se desvia unilateralmente</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="exercises">
+        <div class="topbar">
+          <div>
+            <h2>Tipos de ejercicio paso a paso</h2>
+            <p>Esto es lo que tienes que poder hacer en la prueba. Cambia el selector y practica el algoritmo.</p>
+          </div>
+          <div class="badge">Modo pauta</div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel panel-pad">
+            <h3>Elige ejercicio</h3>
+            <select id="exerciseSelect" style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:6px; background:white;"></select>
+            <div id="exercisePrompt" class="callout" style="margin-top:14px;"></div>
+          </div>
+          <div class="panel panel-pad">
+            <h3 id="exerciseTitle"></h3>
+            <div id="exerciseSteps"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="final">
+        <div class="topbar">
+          <div>
+            <h2>Simulacro final y repaso express</h2>
+            <p>Esta pantalla es para cerrar el estudio: prueba acumulativa, tarjetas de memoria y un plan de repaso corto antes del examen.</p>
+          </div>
+          <div class="badge">Objetivo: 80% o mas</div>
+        </div>
+
+        <div class="exam-score">
+          <div class="stat">
+            <small>Puntaje simulacro</small>
+            <strong id="examScore">0/0</strong>
+          </div>
+          <div class="stat">
+            <small>Porcentaje</small>
+            <strong id="examPct">0%</strong>
+          </div>
+          <div class="stat">
+            <small>Recomendacion</small>
+            <strong id="examAdvice">Empieza</strong>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel panel-pad">
+            <h3>Simulacro acumulativo</h3>
+            <div id="finalExam"></div>
+            <div class="level-actions">
+              <button class="action-btn" id="gradeExamBtn">Corregir simulacro</button>
+              <button class="action-btn secondary" id="resetExamBtn">Reiniciar respuestas</button>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="panel panel-pad">
+              <h3>Flashcard</h3>
+              <div class="flashcard" id="flashcard">
+                <strong id="flashQuestion"></strong>
+                <p id="flashAnswer"></p>
+              </div>
+              <div class="level-actions">
+                <button class="action-btn secondary" id="prevFlashBtn">Anterior</button>
+                <button class="action-btn" id="flipFlashBtn">Ver respuesta</button>
+                <button class="action-btn secondary" id="nextFlashBtn">Siguiente</button>
+              </div>
+            </div>
+
+            <div class="panel panel-pad">
+              <h3>Plan de 90 minutos</h3>
+              <div class="timeline">
+                <div class="timeline-item"><time>0-15</time><p>Demanda, IT, IMg, CT, CMg, beneficio.</p></div>
+                <div class="timeline-item"><time>15-35</time><p>Tarifa en dos partes, EC, F, beneficio y menu tipo 2.</p></div>
+                <div class="timeline-item"><time>35-55</time><p>Cournot, competencia perfecta y costo social.</p></div>
+                <div class="timeline-item"><time>55-70</time><p>Bertrand, Stackelberg, paquetes y tercer grado.</p></div>
+                <div class="timeline-item"><time>70-90</time><p>Juegos, Nash, maximin y simulacro final.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-pad">
+          <h3>Machete honesto de formulas</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Si ves...</th><th>Usa...</th><th>Recuerda</th></tr></thead>
+              <tbody>
+                <tr><td>Q=a−P</td><td><span class="math">EC = <span class="frac"><span>(a − P)<sup>2</sup></span><span>2</span></span></span></td><td>Area triangular del consumidor.</td></tr>
+                <tr><td>F + PQ</td><td><span class="math">T(Q)=F+P·Q</span></td><td>F no puede superar el EC del tipo que entra.</td></tr>
+                <tr><td>Menu de planes</td><td><span class="math">IR e IC</span></td><td>El alto recibe renta informativa.</td></tr>
+                <tr><td>Cantidades simultaneas</td><td><span class="math">π<sub>i</sub>=P(Q)q<sub>i</sub>−CT<sub>i</sub></span></td><td>Deriva por q propia.</td></tr>
+                <tr><td>Precios homogeneos</td><td><span class="math">P=CMg</span></td><td>Bertrand empuja al resultado competitivo.</td></tr>
+                <tr><td>Lider-seguidor</td><td><span class="math">q<sub>seg</sub>=R(q<sub>lider</sub>)</span></td><td>Induccion hacia atras.</td></tr>
+                <tr><td>Matriz de pagos</td><td><span class="math">s<sub>i</sub><sup>*</sup>=BR<sub>i</sub>(s<sub>j</sub><sup>*</sup>)</span></td><td>Marca mejores respuestas.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="lesson" id="quiz">
+        <div class="topbar">
+          <div>
+            <h2>Practica activa</h2>
+            <p>Responde sin mirar. Si fallas, ajusta sliders en el laboratorio y vuelve: aprender aqui es ver el mecanismo.</p>
+          </div>
+          <div class="badge">Modo examen</div>
+        </div>
+
+        <div class="grid three">
+          <div class="panel panel-pad quiz" data-answer="b">
+            <h3>1. Si sube el precio Starter</h3>
+            <p>Segun Q_s(P), que deberia pasar?</p>
+            <div class="quiz-options">
+              <button data-opt="a">Sube la cantidad demandada</button>
+              <button data-opt="b">Baja la cantidad demandada</button>
+              <button data-opt="c">No cambia la demanda</button>
+            </div>
+            <div class="answer"></div>
+          </div>
+
+          <div class="panel panel-pad quiz" data-answer="c">
+            <h3>2. Que es IC?</h3>
+            <p>Compatibilidad de incentivos significa que...</p>
+            <div class="quiz-options">
+              <button data-opt="a">Todos pagan lo mismo</button>
+              <button data-opt="b">La empresa no tiene costos</button>
+              <button data-opt="c">Cada tipo prefiere su propio plan</button>
+            </div>
+            <div class="answer"></div>
+          </div>
+
+          <div class="panel panel-pad quiz" data-answer="a">
+            <h3>3. Por que Pro puede cobrar mas?</h3>
+            <p>En el caso Whapi, el tipo alto...</p>
+            <div class="quiz-options">
+              <button data-opt="a">Tiene mayor valor y menor elasticidad</button>
+              <button data-opt="b">Siempre tiene menor disposicion a pagar</button>
+              <button data-opt="c">No necesita diferenciacion</button>
+            </div>
+            <div class="answer"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const entry = { a: 109.62, b: 3.8462 };
+    const growth = { a: 85.05, b: 0.5025 };
+
+    const els = {
+      entryPrice: document.getElementById('entryPrice'),
+      growthPrice: document.getElementById('growthPrice'),
+      cost: document.getElementById('cost'),
+      entryPriceOut: document.getElementById('entryPriceOut'),
+      growthPriceOut: document.getElementById('growthPriceOut'),
+      costOut: document.getElementById('costOut'),
+      entryQ: document.getElementById('entryQ'),
+      entryRevenue: document.getElementById('entryRevenue'),
+      growthQ: document.getElementById('growthQ'),
+      growthProfit: document.getElementById('growthProfit'),
+      starterCell: document.getElementById('starterCell'),
+      proCell: document.getElementById('proCell'),
+      irLow: document.getElementById('irLow'),
+      icHigh: document.getElementById('icHigh'),
+      rentInfo: document.getElementById('rentInfo'),
+      menuExplain: document.getElementById('menuExplain'),
+      chart: document.getElementById('demandChart')
+    };
+
+    function clamp(v, lo = 0, hi = 100) {
+      return Math.max(lo, Math.min(hi, v));
+    }
+
+    function demand(model, price) {
+      return clamp(model.a - model.b * price);
+    }
+
+    function money(v) {
+      return `${Math.round(v).toLocaleString('es-CL')} USD`;
+    }
+
+    function one(v) {
+      return v.toFixed(1).replace('.', ',');
+    }
+
+    const M = (html) => `<span class="math">${html}</span>`;
+    const F = (top, bottom) => `<span class="frac"><span>${top}</span><span>${bottom}</span></span>`;
+
+    const formulaHtml = new Map([
+      ['Q_entry(P) = clamp(109.62 - 3.8462P, 0, 100)', M('Q<sub>entry</sub>(P)=max(0, min(100, 109.62 − 3.8462P))')],
+      ['Q_growth(P) = clamp(85.05 - 0.5025P, 0, 100)', M('Q<sub>growth</sub>(P)=max(0, min(100, 85.05 − 0.5025P))')],
+      ['Q_s(P) = 109.62 - 3.8462P', M('Q<sub>s</sub>(P)=109.62 − 3.8462P')],
+      ['Q_g(P) = 85.05 - 0.5025P', M('Q<sub>g</sub>(P)=85.05 − 0.5025P')],
+      ['IR: V_i(plan propio) - T_i >= 0', M('IR: V<sub>i</sub>(plan propio) − T<sub>i</sub> ≥ 0')],
+      ['IC: U_i(plan propio) >= U_i(plan ajeno)', M('IC: U<sub>i</sub>(plan propio) ≥ U<sub>i</sub>(plan ajeno)')],
+      ['IT = P * Q', M('IT = P · Q')],
+      ['IMg = dIT/dQ', M(`IMg = ${F('dIT', 'dQ')}`)],
+      ['pi = IT - CT', M('π = IT − CT')],
+      ['EC = (a-P)^2 / 2', M(`EC = ${F('(a − P)<sup>2</sup>', '2')}`)],
+      ['BT = EC + EP', M('BT = EC + EP')],
+      ['PS = 1/2(Q_CP-Q_M)(P_M-CMg)', M(`PS = ${F('1', '2')}(Q<sup>CP</sup> − Q<sup>M</sup>)(P<sup>M</sup> − CMg)`)],
+      ['U_i = V_i(Q) - T', M('U<sub>i</sub> = V<sub>i</sub>(Q) − T')],
+      ['IR: U_i >= 0', M('IR: U<sub>i</sub> ≥ 0')],
+      ['IC: U_i propio >= U_i ajeno', M('IC: U<sub>i</sub>(propio) ≥ U<sub>i</sub>(ajeno)')],
+      ['T(Q) = F + P Q', M('T(Q) = F + P · Q')],
+      ['F = EC_bajo(P)', M('F = EC<sub>bajo</sub>(P)')],
+      ['pi = nF + (P-c)Q', M('π = nF + (P − c)Q')],
+      ['Cournot: IMg_i = CMg_i', M('Cournot: IMg<sub>i</sub> = CMg<sub>i</sub>')],
+      ['Bertrand: P = CMg', M('Bertrand: P = CMg')],
+      ['Stackelberg: induccion hacia atras', M('Stackelberg: inducción hacia atrás')],
+      ['Nash: nadie se desvia solo', M('Nash: nadie se desvía solo')],
+      ['Maximin: max[min(u_i)]', M('Maximin = max[min(u<sub>i</sub>)]')],
+      ['Cooperar si VP coop >= VP desviarse', M('VP(cooperar) ≥ VP(desviarse)')]
+    ]);
+
+    function typesetMath(root = document.body) {
+      if (window.MathJax?.typesetPromise) {
+        window.MathJax.typesetPromise([root]).catch(() => {});
+      }
+    }
+
+    function latexizeFormulaSpans() {
+      document.querySelectorAll('.formula').forEach(span => {
+        const raw = span.textContent.trim();
+        if (span.querySelector('.math, mjx-container')) return;
+        if (formulaHtml.has(raw)) {
+          span.innerHTML = formulaHtml.get(raw);
+        }
+      });
+    }
+
+    const levelPath = [
+      {
+        title: 'Demanda directa e inversa',
+        type: 'Base',
+        goal: 'Aprender a pasar de cantidad demandada a precio y entender por que baja Q cuando sube P.',
+        concept: 'La demanda muestra cuanta cantidad quieren comprar los consumidores a cada precio.',
+        formulaHtml: M('Q = a − P; P = a − Q; Q = q<sub>1</sub> + q<sub>2</sub>'),
+        meaning: ['Q: cantidad demandada.', 'P: precio.', 'a: intercepto o maxima disposicion a pagar.', 'Si hay dos firmas, Q total es la suma q1 + q2.'],
+        example: M('Si Q = 10 − P y P = 4, entonces Q = 6. Si quieres demanda inversa: P = 10 − Q.'),
+        steps: ['Identifica si te dan Q(P) o P(Q).', 'Si te dan Q=a−P, despeja P=a−Q.', 'Sustituye el precio o cantidad del enunciado.', 'Interpreta: precio alto reduce cantidad.'],
+        whapi: 'Si Whapi sube mucho Starter, menos pequenas empresas entran.',
+        examPhrase: 'Demanda directa da Q; demanda inversa da P.',
+        checks: [
+          { kind: 'choice', prompt: 'Si Q=10−P y P=3, cuanto es Q?', options: ['7', '13', '3'], answer: '7', feedback: 'Q=10−3=7.' },
+          { kind: 'numeric', prompt: 'Si Q=12−P y P=5, escribe Q.', answer: 7, feedback: 'Q=12−5=7.' }
+        ]
+      },
+      {
+        title: 'Ingreso total, IMg y beneficio',
+        type: 'Formula',
+        goal: 'Distinguir ingreso de beneficio y aprender por que el ingreso marginal cae mas rapido que el precio.',
+        concept: 'Ingreso es lo que entra por ventas; beneficio es ingreso menos costos.',
+        formulaHtml: M(`IT = P · Q; IMg = ${F('dIT', 'dQ')}; π = IT − CT`),
+        meaning: ['IT: ingreso total.', 'IMg: ingreso adicional por vender una unidad mas.', 'π: beneficio o utilidad de la empresa.', 'CT: costo total.'],
+        example: M('Si P = 10 − Q, entonces IT = (10 − Q)Q = 10Q − Q<sup>2</sup> e IMg = 10 − 2Q.'),
+        steps: ['Pasa demanda a forma inversa P(Q).', 'Multiplica P por Q para obtener IT.', 'Deriva IT respecto a Q para obtener IMg.', 'Resta CT para obtener π.'],
+        whapi: 'Ingresos de Whapi son precio mensual por clientes; beneficio descuenta soporte, IA, infraestructura y APIs.',
+        examPhrase: 'Nunca confundas IT con π: π siempre descuenta costos.',
+        checks: [
+          { kind: 'choice', prompt: 'Si P=10−Q, cual es IT?', options: ['10Q−Q²', '10−2Q', 'Q−10'], answer: '10Q−Q²', feedback: 'IT=P·Q=(10−Q)Q.' },
+          { kind: 'numeric', prompt: 'Si IT=10Q−Q², cual es IMg cuando Q=2?', answer: 6, feedback: 'IMg=10−2Q=10−4=6.' }
+        ]
+      },
+      {
+        title: 'Costos, CMg y maximizacion',
+        type: 'Base',
+        goal: 'Aprender a calcular costo marginal y aplicar la regla correcta de maximizacion.',
+        concept: 'El costo marginal es cuanto aumenta el costo total al producir una unidad adicional.',
+        formulaHtml: M(`CMg = ${F('dCT', 'dQ')}; monopolio: IMg = CMg; competencia: P = CMg`),
+        meaning: ['CT: costo total.', 'CMg: costo marginal.', 'IMg=CMg: regla para monopolio.', 'P=CMg: regla para competencia perfecta.'],
+        example: M('Si CT = 2Q + Q<sup>2</sup>, entonces CMg = 2 + 2Q.'),
+        steps: ['Mira la funcion de costo total.', 'Deriva CT respecto a Q.', 'Si es monopolio, iguala IMg=CMg.', 'Si es competencia perfecta, iguala P=CMg.'],
+        whapi: 'El costo marginal por cliente es lo que cuesta atender un cliente adicional.',
+        examPhrase: 'La regla cambia segun mercado: monopolio usa IMg, competencia usa P.',
+        checks: [
+          { kind: 'choice', prompt: 'Si CT=5Q, cual es CMg?', options: ['5', 'Q', '5Q²'], answer: '5', feedback: 'La derivada de 5Q es 5.' },
+          { kind: 'numeric', prompt: 'Si CT=2Q+Q², cual es CMg cuando Q=3?', answer: 8, feedback: 'CMg=2+2Q=8.' }
+        ]
+      },
+      {
+        title: 'Excedentes y bienestar',
+        type: 'Bienestar',
+        goal: 'Calcular excedente del consumidor, productor, bienestar y perdida social.',
+        concept: 'El excedente mide valor que no se paga o ganancia economica sobre costos variables.',
+        formulaHtml: M(`EC = ${F('(a − P)<sup>2</sup>', '2')}; EP = IT − CV; BT = EC + EP`),
+        meaning: ['EC: beneficio del consumidor por pagar menos que su maxima disposicion.', 'EP: excedente del productor.', 'BT: bienestar total.', 'Perdida social: triangulo de unidades no transadas.'],
+        example: M('Si Q=20−P y P=8, EC = (20−8)<sup>2</sup>/2 = 72.'),
+        steps: ['Identifica a en la demanda Q=a−P.', 'Sustituye el precio P.', 'Calcula el triangulo EC.', 'Suma EC+EP si piden bienestar.'],
+        whapi: 'Si un cliente obtiene 120 USD de valor y paga 49, conserva excedente.',
+        examPhrase: 'El EC es un area triangular bajo la demanda y sobre el precio.',
+        checks: [
+          { kind: 'choice', prompt: 'Si Q=20−P y P=8, EC es...', options: ['72', '12', '144'], answer: '72', feedback: 'EC=(20−8)²/2=144/2=72.' },
+          { kind: 'numeric', prompt: 'Si Q=10−P y P=4, escribe EC.', answer: 18, feedback: 'EC=(10−4)²/2=36/2=18.' }
+        ]
+      },
+      {
+        title: 'Discriminacion de primer grado',
+        type: 'Discriminacion',
+        goal: 'Entender la discriminacion perfecta y por que deja EC=0.',
+        concept: 'La empresa cobra a cada consumidor exactamente su disposicion maxima a pagar.',
+        formulaHtml: M('T(Q)=∫<sub>0</sub><sup>Q</sup>P(q)dq; EC=0; P(Q)=CMg; PS=0'),
+        meaning: ['T(Q): pago total extraido.', 'EC=0: la empresa captura todo el excedente.', 'P(Q)=CMg: cantidad eficiente.', 'PS=0: no hay perdida social si es perfecta.'],
+        example: M('Si la demanda llega hasta P=10 y CMg=2, se produce hasta donde P=2 y se cobra el area bajo la demanda.'),
+        steps: ['Ubica la demanda.', 'Produce hasta P=CMg.', 'Calcula area bajo la demanda.', 'Asigna todo ese valor como pago total.'],
+        whapi: 'Seria cobrar a cada cliente exactamente el valor que le genera recuperar ventas.',
+        examPhrase: 'Primer grado es eficiente en cantidad, pero extrae todo el excedente consumidor.',
+        checks: [
+          { kind: 'choice', prompt: 'En discriminacion de primer grado, EC normalmente es...', options: ['0', 'Maximo', 'Igual a costo total'], answer: '0', feedback: 'La empresa cobra toda la disposicion a pagar.' },
+          { kind: 'choice', prompt: 'La cantidad final cumple...', options: ['P(Q)=CMg', 'P=0', 'Q=0'], answer: 'P(Q)=CMg', feedback: 'Produce hasta la cantidad eficiente.' }
+        ]
+      },
+      {
+        title: 'Discriminacion segundo grado',
+        type: 'Central',
+        goal: 'Dominar IR, IC, renta informativa y por que existe autoseleccion.',
+        concept: 'La empresa no observa el tipo, entonces diseña planes para que cada tipo se elija solo.',
+        formulaHtml: M('U<sub>i</sub>=V<sub>i</sub>(Q)−T; IR: U<sub>i</sub>≥0; IC: U<sub>i</sub>(propio)≥U<sub>i</sub>(ajeno); RI=V<sub>a</sub>(Q<sub>b</sub>)−T<sub>b</sub>'),
+        meaning: ['IR: el consumidor acepta participar.', 'IC: el consumidor prefiere su plan.', 'RI: excedente que se deja al tipo alto.', 'Tipo bajo suele quedar distorsionado.'],
+        example: M('Starter limita uso para que una empresa grande prefiera Pro y no se cuele pagando menos.'),
+        steps: ['Define tipo bajo y alto.', 'Escribe U=V−T para cada plan.', 'Plantea IR para participar.', 'Plantea IC para autoseleccion.', 'Identifica renta informativa del alto.'],
+        whapi: 'Starter, Plus y Pro son discriminacion tipo 2 si cada cliente se autoselecciona.',
+        examPhrase: 'Tipo 2 = menu + autoseleccion + IR + IC + renta informativa.',
+        checks: [
+          { kind: 'choice', prompt: 'IC significa que...', options: ['Cada tipo prefiere su propio plan', 'Todos pagan lo mismo', 'No hay costos'], answer: 'Cada tipo prefiere su propio plan', feedback: 'IC es compatibilidad de incentivos.' },
+          { kind: 'choice', prompt: 'La renta informativa se deja al...', options: ['Tipo alto', 'Tipo bajo', 'Regulador'], answer: 'Tipo alto', feedback: 'Se deja al alto para que no imite al bajo.' }
+        ]
+      },
+      {
+        title: 'Tarifa en dos partes',
+        type: 'Control probable',
+        goal: 'Resolver cargo fijo mas precio por unidad.',
+        concept: 'Una tarifa en dos partes cobra entrada F y uso P·Q.',
+        formulaHtml: M('T(Q)=F+P·Q; F=EC<sub>bajo</sub>(P); π=nF+(P−c)Q'),
+        meaning: ['F: cargo fijo.', 'P: precio por unidad.', 'Q: consumo.', 'c o CMg: costo marginal.'],
+        example: M('Si Q=10−P y P=4, EC=(10−4)<sup>2</sup>/2=18, entonces F maximo para ese tipo es 18.'),
+        steps: ['Calcula EC del tipo que debe entrar.', 'Fija F igual a ese EC si quieres que participe.', 'Calcula Q consumida.', 'Arma beneficio con nF+(P−c)Q.'],
+        whapi: 'Mensualidad fija + cobro por conversaciones extra.',
+        examPhrase: 'El cargo fijo maximo es el excedente del consumidor que quieres mantener dentro.',
+        checks: [
+          { kind: 'numeric', prompt: 'Si Q=10−P y P=4, cual es F=EC?', answer: 18, feedback: 'EC=(10−4)²/2=18.' },
+          { kind: 'choice', prompt: 'Si F supera el EC del bajo, el bajo...', options: ['No participa', 'Paga feliz', 'Produce mas'], answer: 'No participa', feedback: 'Su utilidad seria negativa.' }
+        ]
+      },
+      {
+        title: 'Menu de tarifas en dos partes',
+        type: 'Central',
+        goal: 'Aprender por que P2=c y P1>c en el menu optimo tipico.',
+        concept: 'El plan alto suele ser eficiente; el plan bajo se distorsiona para evitar imitacion.',
+        formulaHtml: M('F<sub>1</sub>=EC<sub>1</sub>(P<sub>1</sub>); P<sub>2</sub>=c; F<sub>2</sub>=EC<sub>2</sub>(P<sub>2</sub>)−EC<sub>2</sub>(P<sub>1</sub>)+F<sub>1</sub>'),
+        meaning: ['F1: cargo fijo bajo.', 'P2=c: tipo alto consume eficiente.', 'F2: cargo fijo alto compatible con IC.', 'P1>c: distorsion del bajo.'],
+        example: M('Con Q1=10−P1, si P1=4, F1=(10−4)<sup>2</sup>/2=18.'),
+        steps: ['Fija P2=c para el alto.', 'Calcula F1 con EC del bajo.', 'Usa IC del alto para despejar F2.', 'Calcula beneficio y compara con tarifa unica.'],
+        whapi: 'Pro debe tener capacidad/integraciones reales; Starter debe tener limites reales.',
+        examPhrase: 'El bajo se distorsiona para que el alto no se cuele.',
+        checks: [
+          { kind: 'choice', prompt: 'En el menu tipico, P2 suele ser...', options: ['CMg', 'Mayor que infinito', '0 siempre'], answer: 'CMg', feedback: 'El tipo alto consume eficientemente.' },
+          { kind: 'choice', prompt: 'P1 suele ser mayor que c para...', options: ['Evitar imitacion del alto', 'Eliminar al bajo siempre', 'Hacer P2 negativo'], answer: 'Evitar imitacion del alto', feedback: 'Esa es la distorsion del plan bajo.' }
+        ]
+      },
+      {
+        title: 'Tercer grado y elasticidad',
+        type: 'Discriminacion',
+        goal: 'Separar mercados observables y entender quien paga mas.',
+        concept: 'La empresa cobra distinto a grupos observables segun elasticidad.',
+        formulaHtml: M(`IMg<sub>1</sub>=CMg; IMg<sub>2</sub>=CMg; ${F('P<sub>i</sub>−CMg', 'P<sub>i</sub>')} = −${F('1', 'ε<sub>i</sub>')}`),
+        meaning: ['Mercados observables: grupos separables.', 'Elasticidad baja: menos sensibilidad al precio.', 'Grupo mas inelastico paga mas.', 'Se maximiza por mercado.'],
+        example: M('Si empresas grandes son menos sensibles al precio que pequenas, pueden pagar mas.'),
+        steps: ['Escribe demanda por mercado.', 'Calcula IMg por mercado.', 'Iguala cada IMg a CMg.', 'Compara elasticidades para explicar precios.'],
+        whapi: 'Precios por pais o industria serian tercer grado si el grupo es observable.',
+        examPhrase: 'Mas inelastico implica mayor markup.',
+        checks: [
+          { kind: 'choice', prompt: 'El grupo que paga mas suele ser el...', options: ['Mas inelastico', 'Mas elastico', 'Que tiene CMg menor siempre'], answer: 'Mas inelastico', feedback: 'Menos sensibilidad permite mayor precio.' },
+          { kind: 'choice', prompt: 'Tercer grado requiere grupos...', options: ['Observables/separables', 'Secretos imposibles', 'Sin demanda'], answer: 'Observables/separables', feedback: 'La empresa puede segmentar directamente.' }
+        ]
+      },
+      {
+        title: 'Ventas atadas y paquetes',
+        type: 'Paquetes',
+        goal: 'Comparar venta separada, paquete puro y paquete mixto.',
+        concept: 'Empaquetar puede capturar mas valor cuando las valoraciones son distintas entre consumidores.',
+        formulaHtml: M('Compra paquete si V<sub>A</sub>+V<sub>B</sub> ≥ P<sub>AB</sub>; π=(P<sub>AB</sub>−C<sub>A</sub>−C<sub>B</sub>)N'),
+        meaning: ['VA y VB: valoraciones por producto.', 'PAB: precio del paquete.', 'Paquete puro: solo pack.', 'Paquete mixto: pack y productos separados.'],
+        example: M('Cliente 1 valora A=8 y B=2; cliente 2 valora A=2 y B=8. Un paquete a 10 puede vender a ambos.'),
+        steps: ['Calcula utilidad de comprar separado.', 'Calcula utilidad del paquete.', 'Cuenta cuantos compran.', 'Compara beneficios entre estrategias.'],
+        whapi: 'Pack de WhatsApp + CRM + IA + pagos puede vender mejor que modulos sueltos.',
+        examPhrase: 'El paquete conviene cuando combina valoraciones diferentes.',
+        checks: [
+          { kind: 'numeric', prompt: 'Si VA=6, VB=5 y PAB=10, cual es utilidad del paquete?', answer: 1, feedback: 'U=6+5−10=1.' },
+          { kind: 'choice', prompt: 'Paquete mixto significa...', options: ['Vender separado y pack', 'Solo pack', 'No vender nada'], answer: 'Vender separado y pack', feedback: 'Mixto ofrece ambas opciones.' }
+        ]
+      },
+      {
+        title: 'Oligopolio',
+        type: 'Modelos',
+        goal: 'Diferenciar Cournot, Bertrand, competencia perfecta y Stackelberg.',
+        concept: 'En oligopolio las empresas son interdependientes: mi decision cambia la mejor respuesta del rival.',
+        formulaHtml: M('Cournot: IMg<sub>i</sub>=CMg<sub>i</sub>; Bertrand: P=CMg; Competencia: P=CMg; Stackelberg: q<sub>seg</sub>=R(q<sub>lider</sub>)'),
+        meaning: ['Cournot: cantidades simultaneas.', 'Bertrand: precios.', 'Competencia perfecta: firmas tomadoras de precio.', 'Stackelberg: lider y seguidora.'],
+        example: M('Cournot simple: P=30−Q, CT=6q. Si son simetricas, cada firma produce q=(30−6)/3=8.'),
+        steps: ['Identifica variable estrategica: precio o cantidad.', 'Si es Cournot, arma pi_i y reacciones.', 'Si es Bertrand homogeneo, P=CMg.', 'Si es Stackelberg, resuelve seguidora primero.'],
+        whapi: 'Whapi compite con otros SaaS; puede diferenciarse para evitar guerra de precios Bertrand.',
+        examPhrase: 'Cournot cantidades, Bertrand precios, Stackelberg secuencial.',
+        checks: [
+          { kind: 'choice', prompt: 'Cournot compite en...', options: ['Cantidades', 'Precios', 'Publicidad solamente'], answer: 'Cantidades', feedback: 'Cournot = cantidades simultaneas.' },
+          { kind: 'choice', prompt: 'Stackelberg se resuelve por...', options: ['Induccion hacia atras', 'Promedios', 'EC solamente'], answer: 'Induccion hacia atras', feedback: 'Primero seguidora, luego lider.' }
+        ]
+      },
+      {
+        title: 'Teoria de juegos',
+        type: 'Juegos',
+        goal: 'Encontrar Nash, dominante, maximin y entender dilema del prisionero.',
+        concept: 'Un equilibrio de Nash es estable porque nadie quiere desviarse solo.',
+        formulaHtml: M('s<sub>i</sub><sup>*</sup>=BR<sub>i</sub>(s<sub>j</sub><sup>*</sup>); Maximin=max[min(u<sub>i</sub>)]'),
+        meaning: ['BR: mejor respuesta.', 'Nash: mejores respuestas coinciden.', 'Dominante: mejor sin importar rival.', 'Maximin: elegir el mejor peor caso.'],
+        example: M('Dilema: si ambos cooperan ganan 5,5; si ambos compiten ganan 2,2; competir puede ser Nash aunque sea peor conjunto.'),
+        steps: ['Marca mejores respuestas de A por columna.', 'Marca mejores respuestas de B por fila.', 'Donde coinciden, hay Nash.', 'Para maximin, mira el peor pago de cada estrategia.'],
+        whapi: 'Dos SaaS pueden querer precios altos, pero cada uno tiene incentivo a bajar precio.',
+        examPhrase: 'Nash no es lo mejor para todos; es donde nadie cambia solo.',
+        checks: [
+          { kind: 'choice', prompt: 'Nash significa...', options: ['Nadie quiere desviarse solo', 'Todos maximizan suma total', 'No hay estrategias'], answer: 'Nadie quiere desviarse solo', feedback: 'Esa es la definicion clave.' },
+          { kind: 'choice', prompt: 'Maximin elige...', options: ['El mejor peor caso', 'El mayor precio', 'La menor demanda'], answer: 'El mejor peor caso', feedback: 'Maximiza el minimo pago posible.' }
+        ]
+      }
+    ];
+
+    let currentLevel = 0;
+    let completedLevels = new Set();
+    let levelControlsBound = false;
+
+    function loadLevelProgress() {
+      try {
+        completedLevels = new Set(JSON.parse(localStorage.getItem('whapiMicroCompletedLevels') || '[]'));
+        currentLevel = Number(localStorage.getItem('whapiMicroCurrentLevel') || '0');
+      } catch {
+        completedLevels = new Set();
+        currentLevel = 0;
+      }
+      if (!Number.isFinite(currentLevel) || currentLevel < 0 || currentLevel >= levelPath.length) currentLevel = 0;
+    }
+
+    function saveLevelProgress() {
+      localStorage.setItem('whapiMicroCompletedLevels', JSON.stringify([...completedLevels]));
+      localStorage.setItem('whapiMicroCurrentLevel', String(currentLevel));
+    }
+
+    function renderLevelPath() {
+      const wrap = document.getElementById('levelPath');
+      if (!wrap) return;
+      wrap.innerHTML = levelPath.map((level, index) => {
+        const done = completedLevels.has(index);
+        const unlocked = index === 0 || completedLevels.has(index - 1) || done;
+        return `
+          <button class="level-node ${index === currentLevel ? 'active' : ''} ${done ? 'done' : ''} ${unlocked ? '' : 'locked'}" data-level-index="${index}">
+            <span class="level-num">${done ? '✓' : index + 1}</span>
+            <span><strong>${level.title}</strong><small>${done ? 'Completado' : unlocked ? level.type : 'Bloqueado suave'}</small></span>
+          </button>
+        `;
+      }).join('');
+      wrap.querySelectorAll('[data-level-index]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentLevel = Number(btn.dataset.levelIndex);
+          saveLevelProgress();
+          renderLevel();
+        });
+      });
+    }
+
+    function renderLevel() {
+      const level = levelPath[currentLevel];
+      if (!level) return;
+      const done = completedLevels.has(currentLevel);
+      const unlocked = currentLevel === 0 || completedLevels.has(currentLevel - 1) || done;
+      document.getElementById('levelTitle').textContent = `${currentLevel + 1}. ${level.title}`;
+      document.getElementById('levelGoal').textContent = level.goal;
+      document.getElementById('levelConcept').textContent = level.concept;
+      document.getElementById('levelFormula').innerHTML = level.formulaHtml;
+      document.getElementById('levelMeaning').innerHTML = level.meaning.map(item => `<li>${item}</li>`).join('');
+      document.getElementById('levelExample').innerHTML = `<span class="formula">${level.example}</span>`;
+      document.getElementById('levelSteps').innerHTML = level.steps.map((step, index) => (
+        `<div class="step"><span>${index + 1}</span><p>${step}</p></div>`
+      )).join('');
+      document.getElementById('levelWhapi').textContent = level.whapi;
+      document.getElementById('levelExamPhrase').textContent = level.examPhrase;
+      document.getElementById('levelStatus').textContent = done ? 'Completado' : unlocked ? 'Disponible' : 'Bloqueado suave';
+      document.getElementById('levelStatus').className = `pill ${done || unlocked ? 'good' : 'warn'}`;
+      document.getElementById('levelType').textContent = level.type;
+      renderPractice();
+      renderLevelPath();
+      renderLevelProgress();
+    }
+
+    function renderPractice() {
+      const level = levelPath[currentLevel];
+      const wrap = document.getElementById('levelPractice');
+      wrap.innerHTML = level.checks.map((check, index) => {
+        if (check.kind === 'numeric') {
+          return `
+            <div class="practice-card" data-check-index="${index}" data-kind="numeric">
+              <p><strong>${index + 1}.</strong> ${check.prompt}</p>
+              <div class="num-answer">
+                <input type="number" step="any" placeholder="Tu respuesta">
+                <button class="action-btn secondary" data-check-numeric="${index}">Revisar</button>
+              </div>
+              <div class="answer"></div>
+            </div>
+          `;
+        }
+        return `
+          <div class="practice-card" data-check-index="${index}">
+            <p><strong>${index + 1}.</strong> ${check.prompt}</p>
+            <div class="practice-options">
+              ${check.options.map(opt => `<button data-check-choice="${index}" data-value="${opt}">${opt}</button>`).join('')}
+            </div>
+            <div class="answer"></div>
+          </div>
+        `;
+      }).join('');
+
+      wrap.querySelectorAll('[data-check-choice]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const check = level.checks[Number(btn.dataset.checkChoice)];
+          const card = btn.closest('.practice-card');
+          card.querySelectorAll('button').forEach(option => option.classList.remove('correct', 'wrong'));
+          const ok = btn.dataset.value === check.answer;
+          btn.classList.add(ok ? 'correct' : 'wrong');
+          card.querySelector('.answer').textContent = ok ? `Correcto. ${check.feedback}` : `Aun no. ${check.feedback}`;
+        });
+      });
+
+      wrap.querySelectorAll('[data-check-numeric]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const check = level.checks[Number(btn.dataset.checkNumeric)];
+          const card = btn.closest('.practice-card');
+          const value = Number(card.querySelector('input').value);
+          const ok = Math.abs(value - check.answer) < 0.001;
+          card.querySelector('.answer').textContent = ok ? `Correcto. ${check.feedback}` : `Aun no. ${check.feedback}`;
+        });
+      });
+    }
+
+    function renderLevelProgress() {
+      const total = levelPath.length;
+      const done = completedLevels.size;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('levelProgressText').textContent = `${done}/${total} completados`;
+      document.getElementById('levelProgressFill').style.width = `${pct}%`;
+    }
+
+    function setupLevels() {
+      loadLevelProgress();
+      renderLevel();
+      if (levelControlsBound) return;
+      levelControlsBound = true;
+      document.getElementById('completeLevelBtn').addEventListener('click', () => {
+        completedLevels.add(currentLevel);
+        if (currentLevel < levelPath.length - 1) currentLevel += 1;
+        saveLevelProgress();
+        renderLevel();
+      });
+      document.getElementById('nextLevelBtn').addEventListener('click', () => {
+        currentLevel = Math.min(levelPath.length - 1, currentLevel + 1);
+        saveLevelProgress();
+        renderLevel();
+      });
+      document.getElementById('resetLevelsBtn').addEventListener('click', () => {
+        completedLevels = new Set();
+        currentLevel = 0;
+        saveLevelProgress();
+        renderLevel();
+      });
+    }
+
+    function drawChart(entryP, growthP) {
+      const c = els.chart;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = c.getBoundingClientRect();
+      c.width = Math.max(640, Math.floor(rect.width * dpr));
+      c.height = Math.floor(rect.height * dpr);
+      const ctx = c.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const w = c.width / dpr;
+      const h = c.height / dpr;
+      const pad = { l: 54, r: 18, t: 18, b: 44 };
+      const plotW = w - pad.l - pad.r;
+      const plotH = h - pad.t - pad.b;
+      const maxP = 180;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#d9ded7';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = '#5b665f';
+      ctx.font = '12px system-ui';
+      for (let i = 0; i <= 5; i++) {
+        const y = pad.t + plotH - (i / 5) * plotH;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y);
+        ctx.lineTo(w - pad.r, y);
+        ctx.stroke();
+        ctx.fillText(`${i * 20}`, 16, y + 4);
+      }
+      for (let i = 0; i <= 6; i++) {
+        const x = pad.l + (i / 6) * plotW;
+        ctx.fillText(`${i * 30}`, x - 8, h - 18);
+      }
+
+      function x(price) { return pad.l + (price / maxP) * plotW; }
+      function y(q) { return pad.t + plotH - (q / 100) * plotH; }
+
+      function line(model, color, maxPrice) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let p = 0; p <= maxPrice; p += 1) {
+          const px = x(p);
+          const py = y(demand(model, p));
+          if (p === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+
+      line(entry, '#167a58', 35);
+      line(growth, '#285fbd', 180);
+
+      function point(model, price, color, label) {
+        const q = demand(model, price);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x(price), y(q), 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#17201b';
+        ctx.font = '13px system-ui';
+        ctx.fillText(`${label}: P ${price}, Q ${one(q)}`, Math.min(x(price) + 9, w - 170), y(q) - 8);
+      }
+
+      point(entry, entryP, '#167a58', 'Starter');
+      point(growth, growthP, '#285fbd', 'Pro');
+
+      ctx.fillStyle = '#17201b';
+      ctx.font = '13px system-ui';
+      ctx.fillText('Q por 100 prospectos', 12, 16);
+      ctx.fillText('Precio USD', w - 88, h - 18);
+      ctx.fillStyle = '#167a58';
+      ctx.fillText('Starter', pad.l + 8, pad.t + 18);
+      ctx.fillStyle = '#285fbd';
+      ctx.fillText('Pro', pad.l + 76, pad.t + 18);
+    }
+
+    function updatePill(el, ok, text) {
+      el.className = `pill ${ok ? 'good' : 'warn'}`;
+      el.textContent = text;
+    }
+
+    function update() {
+      const pS = Number(els.entryPrice.value);
+      const pG = Number(els.growthPrice.value);
+      const c = Number(els.cost.value);
+      const qS = demand(entry, pS);
+      const qG = demand(growth, pG);
+      const revS = pS * qS;
+      const revG = pG * qG;
+      const profitG = (pG - c) * qG;
+      const profitS = (pS - c) * qS;
+
+      els.entryPriceOut.textContent = pS;
+      els.growthPriceOut.textContent = pG;
+      els.costOut.textContent = c;
+      els.entryQ.textContent = one(qS);
+      els.entryRevenue.textContent = money(revS);
+      els.growthQ.textContent = one(qG);
+      els.growthProfit.textContent = money(profitG);
+      els.starterCell.textContent = `${pS} USD`;
+      els.proCell.textContent = `${pG} USD`;
+
+      const lowValue = 28;
+      const highValuePro = 155;
+      const highValueStarter = 75;
+      const uLowStarter = lowValue - pS;
+      const uHighPro = highValuePro - pG;
+      const uHighStarter = highValueStarter - pS;
+      const rent = Math.max(0, uHighPro);
+
+      updatePill(els.irLow, uLowStarter >= 0, uLowStarter >= 0 ? 'Cumple' : 'Falla');
+      updatePill(els.icHigh, uHighPro >= uHighStarter, uHighPro >= uHighStarter ? 'Cumple' : 'Falla');
+      updatePill(els.rentInfo, rent > 0, `${Math.round(rent)} USD`);
+
+      const best = profitG > profitS ? 'Pro esta generando mas beneficio por 100 prospectos que Starter.' : 'Starter esta generando mas beneficio por 100 prospectos que Pro.';
+      const ic = uHighPro >= uHighStarter ? 'La compatibilidad de incentivos del alto se cumple: el cliente grande prefiere Pro.' : 'Ojo: el cliente grande preferiria colarse en Starter. Hay que limitar Starter o bajar/mejorar Pro.';
+      els.menuExplain.textContent = `${best} ${ic}`;
+
+      drawChart(pS, pG);
+    }
+
+    const formulaCards = [
+      {
+        key: 'base',
+        title: 'Demanda, ingreso y beneficio',
+        use: 'Usala cuando el ejercicio te da una demanda y pide precio, ingreso, ingreso marginal o utilidad.',
+        main: M('Q = a − P; P = a − Q; IT = P · Q; π = IT − CT'),
+        steps: '1. Si te dan Q=a-P, despeja P=a-Q. 2. Calcula IT=P*Q. 3. Deriva IT para obtener IMg. 4. Resta costos para obtener pi.',
+        trap: 'No confundas ingreso con beneficio. Beneficio siempre descuenta costos.',
+        whapi: 'Precio mensual por clientes esperados menos costo marginal por cliente.'
+      },
+      {
+        key: 'welfare',
+        title: 'Excedentes y bienestar',
+        use: 'Usala cuando piden EC, EP, bienestar total o perdida social.',
+        main: M(`EC = ${F('(a − P)<sup>2</sup>', '2')}; BT = EC + EP`),
+        steps: '1. Identifica intercepto a. 2. Usa el precio relevante P. 3. Calcula el triangulo de excedente. 4. Suma EC y EP si piden bienestar.',
+        trap: 'El area de perdida social no es la transferencia; la transferencia cambia de manos, la perdida desaparece.',
+        whapi: 'El excedente es el valor que un cliente obtiene por ventas recuperadas menos lo que paga a Whapi.'
+      },
+      {
+        key: 'first',
+        title: 'Discriminacion primer grado',
+        use: 'Usala cuando la empresa conoce la disposicion a pagar de cada consumidor.',
+        main: M('T(Q) = ∫<sub>0</sub><sup>Q</sup>P(q)dq; EC = 0; P(Q) = CMg; PS = 0'),
+        steps: '1. Extrae toda el area bajo la demanda. 2. Produce hasta P=CMg. 3. El consumidor queda sin excedente.',
+        trap: 'No es lo mismo que monopolio simple: aqui la cantidad puede ser eficiente.',
+        whapi: 'Seria cobrarle a cada cliente exactamente el valor que Whapi le genera.'
+      },
+      {
+        key: 'second',
+        title: 'Discriminacion segundo grado',
+        use: 'Usala cuando hay menu de planes y el consumidor se autoselecciona.',
+        main: M('IR: V<sub>i</sub>(Q<sub>i</sub>) − T<sub>i</sub> ≥ 0; IC: U<sub>i</sub>(propio) ≥ U<sub>i</sub>(ajeno); RI = V<sub>a</sub>(Q<sub>b</sub>) − T<sub>b</sub>'),
+        steps: '1. Define tipos bajo/alto. 2. Escribe utilidad U=V-T. 3. Plantea IR. 4. Plantea IC. 5. Identifica renta informativa.',
+        trap: 'El tipo alto no paga todo su valor; hay que dejarle renta para que no imite al bajo.',
+        whapi: 'Starter, Plus y Pro deben hacer que cada empresa elija el plan correcto.'
+      },
+      {
+        key: 'twoPart',
+        title: 'Tarifa en dos partes',
+        use: 'Usala cuando aparece cargo fijo F mas precio por unidad P.',
+        main: M('T(Q) = F + P · Q; F = EC<sub>bajo</sub>(P); π = nF + (P − c)Q'),
+        steps: '1. Calcula EC del tipo bajo. 2. Ese EC fija F si deben entrar todos. 3. Arma Q total. 4. Maximiza pi(P).',
+        trap: 'Si el cargo fijo supera el EC del bajo, el bajo no participa.',
+        whapi: 'Mensualidad fija mas cobro por conversaciones, usuarios o uso extra.'
+      },
+      {
+        key: 'third',
+        title: 'Discriminacion tercer grado',
+        use: 'Usala cuando la empresa separa grupos observables.',
+        main: M(`IMg<sub>1</sub> = CMg; IMg<sub>2</sub> = CMg; ${F('P<sub>i</sub> − CMg', 'P<sub>i</sub>')} = −${F('1', 'ε<sub>i</sub>')}`),
+        steps: '1. Escribe demanda por mercado. 2. Calcula IMg de cada uno. 3. Igualalos a CMg. 4. Obtiene precios.',
+        trap: 'El grupo mas inelastico paga mas, no necesariamente el mas grande.',
+        whapi: 'Precios distintos por pais, industria o tamano observable.'
+      },
+      {
+        key: 'bundling',
+        title: 'Ventas atadas y paquetes',
+        use: 'Usala cuando se venden productos juntos o separados.',
+        main: M('V<sub>A</sub> + V<sub>B</sub> ≥ P<sub>AB</sub>; π = (P<sub>AB</sub> − C<sub>A</sub> − C<sub>B</sub>)N'),
+        steps: '1. Calcula valoraciones por consumidor. 2. Evalua venta separada. 3. Evalua paquete puro. 4. Evalua paquete mixto.',
+        trap: 'El paquete conviene cuando suaviza diferencias de valoracion y aumenta extraccion de excedente.',
+        whapi: 'IA + CRM + pagos + WhatsApp como pack.'
+      },
+      {
+        key: 'cournot',
+        title: 'Cournot',
+        use: 'Usala cuando las firmas compiten en cantidades simultaneamente.',
+        main: M('π<sub>i</sub> = P(Q)q<sub>i</sub> − CT<sub>i</sub>(q<sub>i</sub>); IMg<sub>i</sub> = CMg<sub>i</sub>'),
+        steps: '1. Escribe Q=q1+q2. 2. Arma pi_i. 3. Deriva respecto a q_i. 4. Obtiene reacciones. 5. Resuelve sistema.',
+        trap: 'Cada firma deriva respecto a su propia cantidad, tratando la rival como dada.',
+        whapi: 'Dos plataformas deciden capacidad/clientes objetivo anticipando el efecto en precio.'
+      },
+      {
+        key: 'perfect',
+        title: 'Competencia perfecta',
+        use: 'Usala cuando piden oferta agregada o comparacion con Cournot.',
+        main: M('P = CMg<sub>i</sub>(q<sub>i</sub>); Q<sup>S</sup>(P) = q<sub>1</sub>(P) + q<sub>2</sub>(P)'),
+        steps: '1. Igualar P a cada CMg. 2. Despejar q_i(P). 3. Sumar horizontalmente. 4. Igualar con demanda.',
+        trap: 'Si P esta bajo el minimo de una firma, esa firma produce cero.',
+        whapi: 'Mercado muy competitivo donde el precio tiende al costo marginal.'
+      },
+      {
+        key: 'stackelberg',
+        title: 'Stackelberg',
+        use: 'Usala cuando una firma lider decide primero y otra responde.',
+        main: M('q<sub>2</sub> = R<sub>2</sub>(q<sub>1</sub>); π<sub>1</sub> = P(q<sub>1</sub> + R<sub>2</sub>(q<sub>1</sub>))q<sub>1</sub> − CT<sub>1</sub>(q<sub>1</sub>)'),
+        steps: '1. Resuelve reaccion de la seguidora. 2. Sustituye en problema de lider. 3. Maximiza lider. 4. Recupera q2.',
+        trap: 'No empieces por la lider; primero necesitas saber como reaccionara la seguidora.',
+        whapi: 'Whapi lanza primero un plan agresivo y competidores ajustan despues.'
+      },
+      {
+        key: 'games',
+        title: 'Teoria de juegos',
+        use: 'Usala cuando hay matriz de pagos, estrategias o decisiones simultaneas.',
+        main: M('s<sub>i</sub><sup>*</sup> = BR<sub>i</sub>(s<sub>j</sub><sup>*</sup>); Maximin = max[min(u<sub>i</sub>)]'),
+        steps: '1. Marca mejores respuestas de A por columna. 2. Marca mejores respuestas de B por fila. 3. Donde coinciden hay Nash.',
+        trap: 'Nash no significa mejor resultado total; significa estabilidad individual.',
+        whapi: 'Dos SaaS deciden si mantener precio alto o competir con descuentos.'
+      }
+    ];
+
+    const exercises = [
+      {
+        title: 'Caso 1: tarifa unica en dos partes',
+        prompt: 'Datos tipo: Q1=30-P, Q2=40-P, c=5, n1=3, n2=2. Se pide P*, F* y pi*.',
+        steps: [
+          'Cargo fijo: F=EC_1(P)=(30-P)^2/2.',
+          'Cantidad total: Q_T=3(30-P)+2(40-P)=170-5P.',
+          'Beneficio: pi(P)=5F+(P-5)(170-5P).',
+          'Deriva pi respecto a P e iguala a cero.',
+          'Con P*=9: F*=220.5, Q1=21, Q2=31, pi=1602.5.'
+        ]
+      },
+      {
+        title: 'Caso 2: menu de planes tipo 2',
+        prompt: 'Datos tipo: Q1=a1-P1, Q2=a2-P2, CMg=c. Se pide P1, P2, F1, F2 y pi.',
+        steps: [
+          'Plan bajo: F1=EC1(P1)=(a1-P1)^2/2.',
+          'Plan alto eficiente: P2=c.',
+          'Autoseleccion alto: EC2(P2)-F2=EC2(P1)-F1.',
+          'Despeja F2=EC2(P2)-EC2(P1)+F1.',
+          'Beneficio: pi=n1F1+n2F2+n1(P1-c)(a1-P1)+n2(P2-c)(a2-P2).'
+        ]
+      },
+      {
+        title: 'Caso 3: gimnasio Control 4A',
+        prompt: 'Datos: Q1=30-P, Q2=54-P, c=10, n1=3, n2=1. La tarifa unica de pauta da P=16, F=98, pi=872.',
+        steps: [
+          'Para menu, fija P2=c=10 para el tipo alto.',
+          'Calcula Q2=54-10=44.',
+          'Para el bajo: F1=(30-P1)^2/2 y P1>10.',
+          'Calcula F2=EC2(10)-EC2(P1)+F1.',
+          'Elige P1 que maximiza pi y compara contra 872.'
+        ]
+      },
+      {
+        title: 'Caso 4: Cournot con demanda lineal',
+        prompt: 'Datos tipo: P=A-Q, Q=q1+q2, CT1(q1), CT2(q2). Se pide reacciones, equilibrio, precio y utilidades.',
+        steps: [
+          'Escribe pi1=[A-(q1+q2)]q1-CT1(q1).',
+          'Deriva pi1 respecto a q1 e iguala a cero para R1(q2).',
+          'Escribe pi2 y deriva respecto a q2 para R2(q1).',
+          'Resuelve el sistema de dos reacciones.',
+          'Calcula Q=q1+q2, P=A-Q, pi1 y pi2.'
+        ]
+      },
+      {
+        title: 'Caso 5: Cournot Control 5A con costos cuadraticos',
+        prompt: 'Datos: P=500-Q, CT1=100q1+0.25q1^2, CT2=60q2+2q2^2.',
+        steps: [
+          'IMg1=500-2q1-q2 y CMg1=100+0.5q1.',
+          'CPO firma 1: 500-2q1-q2=100+0.5q1.',
+          'IMg2=500-q1-2q2 y CMg2=60+4q2.',
+          'CPO firma 2: 500-q1-2q2=60+4q2.',
+          'Ordena ambas ecuaciones, resuelve q1 y q2, luego calcula Q, P y utilidades.'
+        ]
+      },
+      {
+        title: 'Caso 6: competencia perfecta con dos firmas',
+        prompt: 'Datos tipo: CMg1(q1), CMg2(q2), P=A-Q. Se pide q1(P), q2(P), oferta total y equilibrio.',
+        steps: [
+          'Iguala P=CMg1(q1) y despeja q1(P).',
+          'Iguala P=CMg2(q2) y despeja q2(P).',
+          'Suma horizontalmente: Q^S(P)=q1(P)+q2(P).',
+          'Demanda inversa P=A-Q equivale a Q^D(P)=A-P.',
+          'Iguala Q^S(P)=Q^D(P) para obtener P_CP y Q_CP.'
+        ]
+      },
+      {
+        title: 'Caso 7: costo social de Cournot',
+        prompt: 'Datos: Q_C, P_C, Q_CP, P_CP y CMgAgregado(Q). Se pide CS y transferencia.',
+        steps: [
+          'Calcula CMgAgregado(Q_C).',
+          'Perdida social: CS=1/2(Q_CP-Q_C)(P_C-CMgAgregado(Q_C)).',
+          'Transferencia: TR=(P_C-P_CP)Q_C.',
+          'Si piden por firma: TR_i=(P_C-P_CP)q_i^C.',
+          'Explica: TR cambia de manos; CS se pierde.'
+        ]
+      },
+      {
+        title: 'Caso 8: Stackelberg',
+        prompt: 'Datos tipo: P=A-Q, CT1, CT2. Empresa 1 lider, empresa 2 seguidora.',
+        steps: [
+          'Resuelve primero el problema de la seguidora: d pi2/dq2=0.',
+          'Obtiene q2=R2(q1).',
+          'Sustituye R2(q1) en la demanda y en pi1.',
+          'Maximiza pi1 respecto a q1.',
+          'Calcula q2=R2(q1), Q, P, pi1 y pi2.'
+        ]
+      },
+      {
+        title: 'Caso 9: matriz de pagos',
+        prompt: 'Datos: matriz 2x2. Se pide mejores respuestas, Nash, dominante y maximin.',
+        steps: [
+          'Para A: en cada columna, marca el mayor pago de A.',
+          'Para B: en cada fila, marca el mayor pago de B.',
+          'Donde ambas marcas coinciden hay equilibrio de Nash.',
+          'Dominante: una estrategia gana para un jugador en todos los escenarios.',
+          'Maximin: toma el peor pago de cada estrategia y elige el mayor de esos peores.'
+        ]
+      }
+    ];
+
+    const finalExamQuestions = [
+      { prompt: 'Si Q=10−P y P=4, Q es...', options: ['6', '14', '4'], answer: '6', explain: 'Q=10−4=6.' },
+      { prompt: 'Si P=10−Q, IT es...', options: ['10Q−Q²', '10−2Q', 'Q²−10'], answer: '10Q−Q²', explain: 'IT=P·Q=(10−Q)Q.' },
+      { prompt: 'Si CT=2Q+Q², CMg es...', options: ['2+2Q', '2Q', 'Q²'], answer: '2+2Q', explain: 'Derivada de CT respecto a Q.' },
+      { prompt: 'Si Q=20−P y P=8, EC es...', options: ['72', '12', '144'], answer: '72', explain: 'EC=(20−8)²/2=72.' },
+      { prompt: 'Primer grado implica...', options: ['EC=0', 'P siempre cero', 'No hay poder de mercado'], answer: 'EC=0', explain: 'La empresa extrae toda la disposicion a pagar.' },
+      { prompt: 'En tipo 2, IC significa...', options: ['Cada tipo prefiere su plan', 'Todos pagan igual', 'No existe renta'], answer: 'Cada tipo prefiere su plan', explain: 'IC es compatibilidad de incentivos.' },
+      { prompt: 'En tarifa en dos partes, F maximo para el bajo es...', options: ['EC bajo', 'CMg', 'Q total'], answer: 'EC bajo', explain: 'Si F supera su EC, no participa.' },
+      { prompt: 'En menu tipico, el tipo alto suele tener...', options: ['P2=CMg', 'P2 infinito', 'Q2=0'], answer: 'P2=CMg', explain: 'El alto consume cantidad eficiente.' },
+      { prompt: 'El grupo mas inelastico suele pagar...', options: ['Mas', 'Menos', 'Siempre cero'], answer: 'Mas', explain: 'Menor sensibilidad permite mayor markup.' },
+      { prompt: 'Cournot compite en...', options: ['Cantidades', 'Precios', 'Turnos secuenciales siempre'], answer: 'Cantidades', explain: 'Cournot es eleccion simultanea de cantidades.' },
+      { prompt: 'Stackelberg se resuelve...', options: ['Por induccion hacia atras', 'Con EC solamente', 'Sin reaccion'], answer: 'Por induccion hacia atras', explain: 'Primero seguidora, luego lider.' },
+      { prompt: 'Nash significa...', options: ['Nadie se desvia unilateralmente', 'Maximo bienestar total', 'Todos cooperan siempre'], answer: 'Nadie se desvia unilateralmente', explain: 'Es estabilidad individual.' }
+    ];
+
+    const flashcards = [
+      ['Demanda inversa', 'Si Q=a−P, entonces P=a−Q. Sirve para calcular precio desde cantidad.'],
+      ['Ingreso marginal', 'Si P=a−bQ, entonces IMg=a−2bQ. Baja mas rapido que el precio.'],
+      ['Costo marginal', 'CMg=dCT/dQ. Es el costo de producir una unidad adicional.'],
+      ['Excedente consumidor', 'EC=(a−P)²/2 para Q=a−P. Es el area triangular sobre el precio.'],
+      ['Tipo 2', 'Menu de planes: IR, IC y renta informativa. El cliente se autoselecciona.'],
+      ['Renta informativa', 'Excedente que se deja al tipo alto para que no imite al bajo.'],
+      ['Tarifa en dos partes', 'T(Q)=F+P·Q. F captura excedente y P controla uso.'],
+      ['Cournot', 'Firmas eligen cantidades simultaneamente. Deriva π_i respecto a q_i.'],
+      ['Bertrand', 'Firmas compiten en precios; con bienes homogeneos, P=CMg.'],
+      ['Stackelberg', 'Juego secuencial. Resuelve primero la reaccion de la seguidora.'],
+      ['Nash', 'Nadie quiere desviarse unilateralmente dado lo que hace el rival.'],
+      ['Maximin', 'Elegir la estrategia cuyo peor resultado posible es el mejor.']
+    ];
+
+    let flashIndex = 0;
+    let flashFlipped = false;
+
+    function renderFormula(index = 0) {
+      const card = formulaCards[index];
+      document.getElementById('formulaTitle').textContent = card.title;
+      document.getElementById('formulaUse').textContent = card.use;
+      document.getElementById('formulaMain').innerHTML = card.main;
+      document.getElementById('formulaSteps').textContent = card.steps;
+      document.getElementById('formulaTrap').textContent = card.trap;
+      document.getElementById('formulaWhapi').textContent = card.whapi;
+      document.querySelectorAll('[data-formula-index]').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+      typesetMath(document.getElementById('formulaMain'));
+    }
+
+    function setupFormulas() {
+      const wrap = document.getElementById('formulaButtons');
+      if (!wrap || wrap.children.length) return;
+      formulaCards.forEach((card, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.dataset.formulaIndex = index;
+        btn.textContent = card.title;
+        btn.addEventListener('click', () => renderFormula(index));
+        wrap.appendChild(btn);
+      });
+      renderFormula(0);
+    }
+
+    function renderExercise(index = 0) {
+      const ex = exercises[index];
+      document.getElementById('exerciseTitle').textContent = ex.title;
+      document.getElementById('exercisePrompt').textContent = ex.prompt;
+      document.getElementById('exerciseSteps').innerHTML = ex.steps.map((step, i) => (
+        `<div class="step" style="margin-bottom:10px;"><span>${i + 1}</span><p>${step}</p></div>`
+      )).join('');
+    }
+
+    function setupExercises() {
+      const select = document.getElementById('exerciseSelect');
+      if (!select || select.children.length) return;
+      exercises.forEach((ex, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = ex.title;
+        select.appendChild(option);
+      });
+      select.addEventListener('change', () => renderExercise(Number(select.value)));
+      renderExercise(0);
+    }
+
+    function renderFinalExam() {
+      const wrap = document.getElementById('finalExam');
+      if (!wrap || wrap.children.length) return;
+      wrap.innerHTML = finalExamQuestions.map((q, index) => `
+        <div class="practice-card" data-final-index="${index}">
+          <p><strong>${index + 1}.</strong> ${q.prompt}</p>
+          <div class="practice-options">
+            ${q.options.map(opt => `<button data-final-choice="${index}" data-value="${opt}">${opt}</button>`).join('')}
+          </div>
+          <div class="answer"></div>
+        </div>
+      `).join('');
+      wrap.querySelectorAll('[data-final-choice]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.practice-card');
+          card.dataset.selected = btn.dataset.value;
+          card.querySelectorAll('button').forEach(option => option.classList.remove('correct', 'wrong'));
+          btn.classList.add('correct');
+        });
+      });
+    }
+
+    function gradeFinalExam() {
+      let score = 0;
+      finalExamQuestions.forEach((q, index) => {
+        const card = document.querySelector(`[data-final-index="${index}"]`);
+        const selected = card?.dataset.selected || '';
+        const ok = selected === q.answer;
+        if (ok) score += 1;
+        card.querySelectorAll('button').forEach(btn => {
+          btn.classList.toggle('correct', btn.dataset.value === q.answer);
+          btn.classList.toggle('wrong', btn.dataset.value === selected && !ok);
+        });
+        card.querySelector('.answer').textContent = ok ? `Correcto. ${q.explain}` : `Revisa: ${q.explain}`;
+      });
+      const pct = Math.round((score / finalExamQuestions.length) * 100);
+      document.getElementById('examScore').textContent = `${score}/${finalExamQuestions.length}`;
+      document.getElementById('examPct').textContent = `${pct}%`;
+      document.getElementById('examAdvice').textContent = pct >= 80 ? 'Vas bien' : pct >= 60 ? 'Repasa errores' : 'Vuelve a niveles';
+    }
+
+    function resetFinalExam() {
+      document.querySelectorAll('[data-final-index]').forEach(card => {
+        delete card.dataset.selected;
+        card.querySelectorAll('button').forEach(btn => btn.classList.remove('correct', 'wrong'));
+        card.querySelector('.answer').textContent = '';
+      });
+      document.getElementById('examScore').textContent = `0/${finalExamQuestions.length}`;
+      document.getElementById('examPct').textContent = '0%';
+      document.getElementById('examAdvice').textContent = 'Empieza';
+    }
+
+    function renderFlashcard() {
+      const [question, answer] = flashcards[flashIndex];
+      document.getElementById('flashQuestion').textContent = question;
+      document.getElementById('flashAnswer').textContent = flashFlipped ? answer : 'Toca "Ver respuesta" o la tarjeta.';
+      document.getElementById('flipFlashBtn').textContent = flashFlipped ? 'Ocultar respuesta' : 'Ver respuesta';
+    }
+
+    function setupFinalMode() {
+      renderFinalExam();
+      if (setupFinalMode.bound) return;
+      setupFinalMode.bound = true;
+      document.getElementById('gradeExamBtn').addEventListener('click', gradeFinalExam);
+      document.getElementById('resetExamBtn').addEventListener('click', resetFinalExam);
+      document.getElementById('flipFlashBtn').addEventListener('click', () => {
+        flashFlipped = !flashFlipped;
+        renderFlashcard();
+      });
+      document.getElementById('flashcard').addEventListener('click', () => {
+        flashFlipped = !flashFlipped;
+        renderFlashcard();
+      });
+      document.getElementById('prevFlashBtn').addEventListener('click', () => {
+        flashIndex = (flashIndex - 1 + flashcards.length) % flashcards.length;
+        flashFlipped = false;
+        renderFlashcard();
+      });
+      document.getElementById('nextFlashBtn').addEventListener('click', () => {
+        flashIndex = (flashIndex + 1) % flashcards.length;
+        flashFlipped = false;
+        renderFlashcard();
+      });
+      resetFinalExam();
+      renderFlashcard();
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.lesson').forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+        setupLevels();
+        setupFormulas();
+        setupExercises();
+        setupFinalMode();
+        update();
+      });
+    });
+
+    document.querySelectorAll('input[type="range"]').forEach(input => input.addEventListener('input', update));
+    window.addEventListener('resize', update);
+
+    document.querySelectorAll('.quiz').forEach(card => {
+      card.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+          card.querySelectorAll('button').forEach(b => b.classList.remove('correct', 'wrong'));
+          const ok = button.dataset.opt === card.dataset.answer;
+          button.classList.add(ok ? 'correct' : 'wrong');
+          card.querySelector('.answer').textContent = ok ? 'Correcto. Esa es la intuicion que debes llevar a la prueba.' : 'Casi. Vuelve a mirar la formula y piensa que pasa cuando sube P.';
+        });
+      });
+    });
+
+    update();
+    setupLevels();
+    setupFormulas();
+    setupExercises();
+    setupFinalMode();
+    latexizeFormulaSpans();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "whapi-micro-lab",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node serve-whapi-lab.mjs"
+  }
+}
